@@ -62,7 +62,7 @@ function HomeRoute() {
       </header>
 
       <section className="grid flex-1 items-center gap-10 py-12 lg:grid-cols-[1.06fr_0.94fr] lg:py-8">
-        <div className="max-w-3xl [animation:kw-fade-up_480ms_ease-out_both]">
+        <div className="max-w-3xl animate-[kw-fade-up_480ms_ease-out_both]">
           <p className="mb-5 text-sm font-semibold tracking-[0.28em] text-(--color-accent) uppercase">
             How well do you know your keyboard?
           </p>
@@ -101,7 +101,7 @@ function HomeRoute() {
           </div>
         </div>
 
-        <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) p-4 shadow-[0_22px_90px_var(--color-shadow)] [animation:kw-fade-up_560ms_120ms_ease-out_both]">
+        <div className="animate-[kw-fade-up_560ms_120ms_ease-out_both] rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) p-4 shadow-[0_22px_90px_var(--color-shadow)]">
           <div className="mb-5 flex items-center justify-between border-b border-(--color-border-subtle) pb-4">
             <div>
               <h2 className="text-base font-bold text-(--color-text-primary)">

@@ -13,14 +13,14 @@ function GameRoute() {
 
   return (
     <main className="flex min-h-screen items-center justify-center px-5">
-      <section className="w-full max-w-3xl rounded-[var(--radius)] border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-6 text-center shadow-[0_22px_90px_var(--color-shadow)]">
-        <p className="text-xs font-semibold tracking-[0.22em] text-[var(--color-accent)] uppercase">
+      <section className="w-full max-w-3xl rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) p-6 text-center shadow-[0_22px_90px_var(--color-shadow)]">
+        <p className="text-xs font-semibold tracking-[0.22em] text-(--color-accent) uppercase">
           Game Session
         </p>
-        <h1 className="mt-4 text-3xl font-black text-[var(--color-text-primary)]">
+        <h1 className="mt-4 text-3xl font-black text-(--color-text-primary)">
           Engine Slot Reserved
         </h1>
-        <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-[var(--color-text-secondary)]">
+        <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-(--color-text-secondary)">
           The route is wired for {search.mode ?? "letter"} mode on{" "}
           {search.difficulty ?? "easy"} difficulty. Falling tiles arrive in the
           next feature.

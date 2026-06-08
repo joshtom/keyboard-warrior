@@ -22,10 +22,10 @@ const routeTree = rootRoute.addChildren([
     component: () => (
       <main className="flex min-h-screen items-center justify-center px-5 text-center">
         <section>
-          <p className="text-sm font-semibold text-[var(--color-accent)]">
+          <p className="text-sm font-semibold text-(--color-accent)">
             404
           </p>
-          <h1 className="mt-3 text-3xl font-black text-[var(--color-text-primary)]">
+          <h1 className="mt-3 text-3xl font-black text-(--color-text-primary)">
             Route missed
           </h1>
         </section>

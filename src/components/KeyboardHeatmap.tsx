@@ -7,7 +7,6 @@ type KeyboardHeatmapProps = {
 
 type HeatmapKey = {
   label: string;
-  width?: number;
 };
 
 const keyRows: Array<Array<HeatmapKey>> = [
@@ -26,10 +25,10 @@ export function KeyboardHeatmap({
   perKeyAverageMs,
 }: KeyboardHeatmapProps) {
   return (
-    <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) p-4">
+    <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) p-3">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-base font-black text-(--color-text-primary)">
+          <h2 className="text-sm font-black text-(--color-text-primary)">
             Keyboard Heatmap
           </h2>
           <p className="mt-1 text-xs leading-5 text-(--color-text-secondary)">
@@ -41,10 +40,10 @@ export function KeyboardHeatmap({
         </span>
       </div>
 
-      <div className="mt-4 space-y-2 overflow-x-auto pb-1">
+      <div className="mt-3 space-y-1.5 overflow-x-auto pb-1">
         {keyRows.map((row, rowIndex) => (
           <div
-            className="grid min-w-[520px] gap-2"
+            className="grid min-w-[440px] gap-1.5"
             key={row.map((item) => item.label).join("")}
             style={{
               gridTemplateColumns: `repeat(${row.length}, minmax(0, 1fr))`,
@@ -62,7 +61,7 @@ export function KeyboardHeatmap({
                   aria-label={`${keyItem.label} ${
                     reactionMs ? `${reactionMs}ms` : "not encountered"
                   }`}
-                  className="flex h-10 items-center justify-center rounded-(--radius) border border-(--color-border-subtle) text-xs font-black text-(--color-text-inverse) shadow-[0_10px_24px_var(--color-shadow)]"
+                  className="flex h-8 items-center justify-center rounded-(--radius) border border-(--color-border-subtle) text-[0.68rem] font-black text-(--color-text-inverse) shadow-[0_10px_24px_var(--color-shadow)]"
                   key={keyItem.label}
                   style={{
                     backgroundColor: getHeatmapColorVariable(
@@ -84,7 +83,7 @@ export function KeyboardHeatmap({
         ))}
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-3 text-xs text-(--color-text-secondary)">
+      <div className="mt-3 flex flex-wrap gap-3 text-xs text-(--color-text-secondary)">
         <span className="flex items-center gap-2">
           <span className="h-2.5 w-2.5 rounded-full bg-(--color-heatmap-fast)" />
           Fast

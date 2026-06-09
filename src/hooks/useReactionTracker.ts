@@ -19,12 +19,22 @@ export function useReactionTracker() {
 
   const recordReaction = useCallback((tile: TileState) => {
     const reactionMs = Math.max(0, Math.round(performance.now() - tile.spawnedAt));
-    const currentSamples = reactionSamplesRef.current[tile.value] ?? [];
+    const trackedKeys = Array.from(
+      new Set(
+        tile.value
+          .split("")
+          .map((character) => character.toLowerCase())
+          .filter((character) => /^[a-z0-9]$/.test(character)),
+      ),
+    );
 
-    reactionSamplesRef.current = {
-      ...reactionSamplesRef.current,
-      [tile.value]: [...currentSamples, reactionMs],
-    };
+    reactionSamplesRef.current = trackedKeys.reduce<ReactionSamples>(
+      (nextSamples, key) => ({
+        ...nextSamples,
+        [key]: [...(nextSamples[key] ?? []), reactionMs],
+      }),
+      reactionSamplesRef.current,
+    );
   }, []);
 
   const getReactionSummary = useCallback((): ReactionSummary => {

@@ -1,5 +1,5 @@
 import { Link, createRoute } from "@tanstack/react-router";
-import { CalendarDays, Gauge, Home, RotateCcw, Trophy } from "lucide-react";
+import { CalendarDays, Gauge, Home, RotateCcw } from "lucide-react";
 import { useState } from "react";
 
 import { KeyboardHeatmap } from "@/components/KeyboardHeatmap";
@@ -68,7 +68,7 @@ function ResultsRoute() {
   const topReactionEntries = result ? getTopReactionEntries(result) : [];
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-5 sm:px-8 lg:px-10">
+    <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-5 py-4 sm:px-8 lg:px-10">
       <header className="flex items-center justify-between">
         <Link
           aria-label="Keyboard Warrior home"
@@ -85,42 +85,39 @@ function ResultsRoute() {
         </Button>
       </header>
 
-      <section className="grid flex-1 items-center gap-5 py-10 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) p-5 shadow-[0_22px_90px_var(--color-shadow)]">
-          <p className="text-xs font-semibold tracking-[0.22em] text-(--color-accent) uppercase">
-            Results
-          </p>
-          <div className="mt-6 flex items-start gap-4">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-(--radius) border border-(--color-border-subtle) bg-(--color-bg-overlay) text-(--color-accent)">
-              <Trophy aria-hidden="true" className="h-5 w-5" />
-            </span>
-            <div>
+      <section className="grid flex-1 gap-4 py-5 lg:grid-cols-[0.72fr_1.28fr]">
+        <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) p-4 shadow-[0_22px_90px_var(--color-shadow)]">
+          <div>
+            <p className="text-xs font-semibold tracking-[0.22em] text-(--color-accent) uppercase">
+              Results
+            </p>
+            <div className="mt-4">
               <p className="text-sm text-(--color-text-secondary)">
                 Final Score
               </p>
-              <h1 className="mt-1 text-6xl leading-none font-black text-(--color-text-primary) tabular-nums sm:text-7xl">
+              <h1 className="mt-1 text-6xl leading-none font-black text-(--color-text-primary) tabular-nums">
                 {result ? result.score : 0}
               </h1>
             </div>
           </div>
 
           {result ? (
-            <dl className="mt-7 grid grid-cols-2 gap-3">
-              <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) p-3">
+            <dl className="mt-5 grid grid-cols-2 gap-2">
+              <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) p-2.5">
                 <dt className="flex items-center gap-2 text-[0.65rem] font-semibold tracking-[0.16em] text-(--color-text-muted) uppercase">
                   <Gauge aria-hidden="true" className="h-3.5 w-3.5" />
                   Mode
                 </dt>
-                <dd className="mt-2 text-sm font-black text-(--color-text-primary) uppercase">
-                  {result.mode}
+                <dd className="mt-1.5 text-sm font-black text-(--color-text-primary) uppercase">
+                  {result.mode} / {result.difficulty}
                 </dd>
               </div>
-              <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) p-3">
+              <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) p-2.5">
                 <dt className="flex items-center gap-2 text-[0.65rem] font-semibold tracking-[0.16em] text-(--color-text-muted) uppercase">
                   <CalendarDays aria-hidden="true" className="h-3.5 w-3.5" />
                   Played
                 </dt>
-                <dd className="mt-2 text-sm font-black text-(--color-text-primary)">
+                <dd className="mt-1.5 text-sm font-black text-(--color-text-primary)">
                   {formatDate(result.endedAt)}
                 </dd>
               </div>
@@ -132,7 +129,7 @@ function ResultsRoute() {
             </p>
           )}
 
-          <div className="mt-7 flex flex-wrap gap-3">
+          <div className="mt-5 flex flex-wrap gap-3">
             <Button asChild>
               <Link
                 to="/game"
@@ -152,60 +149,55 @@ function ResultsRoute() {
         </div>
 
         {result ? (
-          <div className="space-y-4">
-            <dl className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+          <div className="grid gap-3 lg:grid-rows-[auto_auto_1fr]">
+            <dl className="grid grid-cols-3 gap-2">
               {statCards.map((item) => (
                 <div
-                  className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) p-4"
+                  className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) p-3"
                   key={item.label}
                 >
                   <dt className="text-[0.65rem] font-semibold tracking-[0.16em] text-(--color-text-muted) uppercase">
                     {item.label}
                   </dt>
-                  <dd className="mt-2 text-2xl font-black text-(--color-text-primary) tabular-nums">
+                  <dd className="mt-1.5 text-xl font-black text-(--color-text-primary) tabular-nums">
                     {item.value}
                   </dd>
-                  <p className="mt-2 text-xs leading-5 text-(--color-text-secondary)">
+                  <p className="mt-1 text-xs leading-4 text-(--color-text-secondary)">
                     {item.detail}
                   </p>
                 </div>
               ))}
             </dl>
 
-            <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) p-4">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-base font-black text-(--color-text-primary)">
-                    Fastest Reactions
-                  </h2>
-                  <p className="mt-1 text-xs leading-5 text-(--color-text-secondary)">
-                    Best average timings from this session.
-                  </p>
-                </div>
-                <span className="text-xs font-bold text-(--color-accent)">
-                  {topReactionEntries.length}
-                </span>
-              </div>
-              <div className="mt-4 grid gap-2 sm:grid-cols-2">
+            <div className="flex items-center gap-2 rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) p-3">
+              <h2 className="shrink-0 text-sm font-black text-(--color-text-primary)">
+                Fastest
+              </h2>
+              <div className="flex min-w-0 flex-1 gap-2 overflow-hidden">
                 {topReactionEntries.length > 0 ? (
-                  topReactionEntries.map(([key, averageMs]) => (
+                  topReactionEntries.slice(0, 4).map(([key, averageMs]) => (
                     <div
-                      className="flex items-center justify-between gap-3 rounded-(--radius) border border-(--color-border-subtle) bg-(--color-bg-overlay) px-3 py-2"
+                      className="flex min-w-0 items-center gap-2 rounded-(--radius) border border-(--color-border-subtle) bg-(--color-bg-overlay) px-2.5 py-1.5"
                       key={key}
                     >
-                      <span className="max-w-36 truncate text-sm font-black text-(--color-text-primary)">
+                      <span className="max-w-16 truncate text-xs font-black text-(--color-text-primary)">
                         {key}
                       </span>
-                      <span className="shrink-0 text-sm font-bold text-(--color-accent)">
+                      <span className="shrink-0 text-xs font-bold text-(--color-accent)">
                         {averageMs}ms
                       </span>
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-(--color-text-secondary)">
-                    No successful hits were recorded.
+                  <p className="text-xs text-(--color-text-secondary)">
+                    No successful hits recorded.
                   </p>
                 )}
+              </div>
+              <div className="shrink-0">
+                <span className="text-xs font-bold text-(--color-accent)">
+                  {topReactionEntries.length}
+                </span>
               </div>
             </div>
 

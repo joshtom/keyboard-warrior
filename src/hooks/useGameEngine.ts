@@ -134,7 +134,9 @@ export function useGameEngine({
       return;
     }
 
-    setTiles((current) => current.filter((tile) => tile.id !== tileId));
+    const nextTiles = tilesRef.current.filter((tile) => tile.id !== tileId);
+    tilesRef.current = nextTiles;
+    setTiles(nextTiles);
     setStats((current) => {
       const nextCombo = current.combo + 1;
 
@@ -188,32 +190,36 @@ export function useGameEngine({
         return;
       }
 
-      setTiles((currentTiles) => {
-        let nextTiles = currentTiles
-          .map((tile) => ({
-            ...tile,
-            y: ((now - tile.spawnedAt) / settings.fallDurationMs) * 100,
-          }))
-          .filter((tile) => tile.y < 100);
+      let nextTiles = tilesRef.current
+        .map((tile) => ({
+          ...tile,
+          y: ((now - tile.spawnedAt) / settings.fallDurationMs) * 100,
+        }))
+        .filter((tile) => tile.y < 100);
 
-        const missedCount = currentTiles.length - nextTiles.length;
+      const missedCount = tilesRef.current.length - nextTiles.length;
 
-        if (missedCount > 0) {
-          registerMiss(missedCount);
-        }
+      if (missedCount > 0) {
+        registerMiss(missedCount);
+      }
 
-        if (
-          now - lastSpawnedAtRef.current >= settings.spawnEveryMs &&
-          nextTiles.length < settings.maxActiveTiles
-        ) {
-          const nextTile = createTile(characters, now, lastTileXRef.current);
-          lastTileXRef.current = nextTile.x;
-          lastSpawnedAtRef.current = now;
-          nextTiles = [...nextTiles, nextTile];
-        }
+      while (
+        now - lastSpawnedAtRef.current >= settings.spawnEveryMs &&
+        nextTiles.length < settings.maxActiveTiles
+      ) {
+        const spawnedAt = lastSpawnedAtRef.current + settings.spawnEveryMs;
+        const nextTile = createTile(
+          characters,
+          spawnedAt,
+          lastTileXRef.current,
+        );
+        lastTileXRef.current = nextTile.x;
+        lastSpawnedAtRef.current = spawnedAt;
+        nextTiles = [...nextTiles, nextTile];
+      }
 
-        return nextTiles;
-      });
+      tilesRef.current = nextTiles;
+      setTiles(nextTiles);
 
       animationFrameId = window.requestAnimationFrame(tick);
     };

@@ -41,18 +41,18 @@ export const difficultySettings: Record<
   }
 > = {
   easy: {
-    fallDurationMs: 6200,
-    spawnEveryMs: 1200,
-    maxActiveTiles: 1,
+    fallDurationMs: 6400,
+    spawnEveryMs: 760,
+    maxActiveTiles: 7,
   },
   medium: {
-    fallDurationMs: 5200,
-    spawnEveryMs: 900,
-    maxActiveTiles: 3,
+    fallDurationMs: 5400,
+    spawnEveryMs: 560,
+    maxActiveTiles: 10,
   },
   hard: {
-    fallDurationMs: 4300,
-    spawnEveryMs: 680,
-    maxActiveTiles: 5,
+    fallDurationMs: 4600,
+    spawnEveryMs: 420,
+    maxActiveTiles: 13,
   },
 };

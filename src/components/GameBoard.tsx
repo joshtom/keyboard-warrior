@@ -21,11 +21,6 @@ export function GameBoard({ tiles, missFlashKey, onHitTile }: GameBoardProps) {
       {tiles.map((tile) => (
         <Tile key={tile.id} onHit={onHitTile} tile={tile} />
       ))}
-      {tiles.length === 0 ? (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-6 text-center text-sm text-(--color-text-muted)">
-          Get ready. The next key is dropping.
-        </div>
-      ) : null}
     </section>
   );
 }

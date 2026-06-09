@@ -1,0 +1,42 @@
+import type { Difficulty } from "@/types";
+
+export const wordLists: Record<Difficulty, Array<string>> = {
+  easy: [
+    "code",
+    "type",
+    "play",
+    "fast",
+    "home",
+    "rank",
+    "flow",
+    "loop",
+    "key",
+    "run",
+    "tap",
+    "win",
+  ],
+  medium: [
+    "signal",
+    "rhythm",
+    "screen",
+    "button",
+    "cursor",
+    "typing",
+    "letter",
+    "combo",
+    "arcade",
+    "react",
+  ],
+  hard: [
+    "Velocity",
+    "Keystroke",
+    "Overdrive",
+    "Synthesis",
+    "Algorithm",
+    "Momentum",
+    "Wildcard",
+    "Hypertext",
+    "Interface",
+    "Precision",
+  ],
+};

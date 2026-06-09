@@ -54,6 +54,17 @@ function GameRoute() {
         <CountdownTimer timeLeft={game.timeLeft} />
       </section>
 
+      {mode === "word" ? (
+        <section className="mx-auto w-full max-w-6xl rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) px-4 py-3">
+          <p className="text-[0.65rem] font-semibold tracking-[0.18em] text-(--color-text-muted) uppercase">
+            Typed
+          </p>
+          <p className="mt-1 min-h-7 text-xl font-black text-(--color-accent)">
+            {game.typedText || ""}
+          </p>
+        </section>
+      ) : null}
+
       <div className="mx-auto flex w-full max-w-6xl flex-1">
         <GameBoard
           missFlashKey={game.missFlashKey}

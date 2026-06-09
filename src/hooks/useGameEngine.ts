@@ -1,13 +1,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { difficultySettings, letterCharacters } from "@/data/characterSets";
+import { wordLists } from "@/data/wordLists";
 import {
   calculateAccuracy,
   calculateHitScore,
   calculateMissScore,
   getComboMultiplier,
 } from "@/utils/scoring";
-import type { Difficulty, GameMode, GameResult, GameStats, TileState } from "@/types";
+import type {
+  Difficulty,
+  GameMode,
+  GameResult,
+  GameStats,
+  TileState,
+} from "@/types";
 
 type UseGameEngineOptions = {
   mode: GameMode;
@@ -31,7 +38,7 @@ function getRandomItem(items: Array<string>) {
 }
 
 function createTile(
-  characters: Array<string>,
+  values: Array<string>,
   spawnedAt: number,
   lastX: number | null,
 ) {
@@ -44,7 +51,7 @@ function createTile(
 
   return {
     id: `${spawnedAt}-${Math.random().toString(16).slice(2)}`,
-    value: getRandomItem(characters),
+    value: getRandomItem(values),
     x: nextX,
     y: 0,
     spawnedAt,
@@ -58,14 +65,15 @@ export function useGameEngine({
   onComplete,
 }: UseGameEngineOptions) {
   const settings = difficultySettings[difficulty];
-  const characters = useMemo(
-    () => letterCharacters[difficulty],
-    [difficulty],
+  const tileValues = useMemo(
+    () => (mode === "word" ? wordLists[difficulty] : letterCharacters[difficulty]),
+    [difficulty, mode],
   );
   const [phase, setPhase] = useState<GamePhase>("playing");
   const [tiles, setTiles] = useState<Array<TileState>>([]);
   const [stats, setStats] = useState<GameStats>(initialStats);
   const [timeLeft, setTimeLeft] = useState(durationSeconds);
+  const [typedText, setTypedText] = useState("");
   const [missFlashKey, setMissFlashKey] = useState(0);
   const statsRef = useRef(stats);
   const tilesRef = useRef(tiles);
@@ -74,6 +82,7 @@ export function useGameEngine({
   const startedAtRef = useRef<number | null>(null);
   const lastSpawnedAtRef = useRef(0);
   const lastTileXRef = useRef<number | null>(null);
+  const typedTextRef = useRef("");
 
   useEffect(() => {
     statsRef.current = stats;
@@ -150,9 +159,51 @@ export function useGameEngine({
     });
   }, []);
 
+  const applyTypedText = useCallback(
+    (nextTypedText: string) => {
+      const matchingTile = tilesRef.current.find((tile) =>
+        nextTypedText.endsWith(tile.value),
+      );
+
+      if (matchingTile) {
+        typedTextRef.current = "";
+        setTypedText("");
+        hitTile(matchingTile.id);
+        return;
+      }
+
+      typedTextRef.current = nextTypedText;
+      setTypedText(nextTypedText);
+    },
+    [hitTile],
+  );
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (phaseRef.current !== "playing" || mode !== "letter") {
+      if (phaseRef.current !== "playing") {
+        return;
+      }
+
+      if (mode === "word") {
+        if (event.key === "Backspace") {
+          event.preventDefault();
+          applyTypedText(typedTextRef.current.slice(0, -1));
+          return;
+        }
+
+        if (event.key === "Escape" || event.key === " ") {
+          event.preventDefault();
+          typedTextRef.current = "";
+          setTypedText("");
+          return;
+        }
+
+        if (event.key.length !== 1) {
+          return;
+        }
+
+        event.preventDefault();
+        applyTypedText(`${typedTextRef.current}${event.key}`.slice(-24));
         return;
       }
 
@@ -169,7 +220,7 @@ export function useGameEngine({
     window.addEventListener("keydown", handleKeyDown);
 
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [hitTile, mode]);
+  }, [applyTypedText, hitTile, mode]);
 
   useEffect(() => {
     let animationFrameId = 0;
@@ -209,7 +260,7 @@ export function useGameEngine({
       ) {
         const spawnedAt = lastSpawnedAtRef.current + settings.spawnEveryMs;
         const nextTile = createTile(
-          characters,
+          tileValues,
           spawnedAt,
           lastTileXRef.current,
         );
@@ -227,7 +278,7 @@ export function useGameEngine({
     animationFrameId = window.requestAnimationFrame(tick);
 
     return () => window.cancelAnimationFrame(animationFrameId);
-  }, [characters, completeSession, durationSeconds, registerMiss, settings]);
+  }, [completeSession, durationSeconds, registerMiss, settings, tileValues]);
 
   return {
     phase,
@@ -236,6 +287,7 @@ export function useGameEngine({
     timeLeft,
     missFlashKey,
     comboMultiplier: getComboMultiplier(stats.combo),
+    typedText,
     hitTile,
   };
 }

@@ -11,6 +11,7 @@ import {
 import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { difficultyProfiles } from "@/data/difficultyProfiles";
 import { useIsCoarsePointer } from "@/hooks/useIsCoarsePointer";
 import { rootRoute } from "@/routes/root";
 import type { Difficulty, GameMode } from "@/types";
@@ -47,29 +48,21 @@ const modes: Array<ModeOption> = [
   },
 ];
 
-const difficulties: Array<DifficultyOption> = [
-  {
-    value: "easy",
-    label: "Easy",
-    detail: "Slow, clean, focused",
-    metric: "1 tile",
-    icon: TimerReset,
-  },
-  {
-    value: "medium",
-    label: "Medium",
-    detail: "More keys, more pressure",
-    metric: "2-3 tiles",
-    icon: Gauge,
-  },
-  {
-    value: "hard",
-    label: "Hard",
-    detail: "Symbols in the storm",
-    metric: "3-5 tiles",
-    icon: Zap,
-  },
+const difficultyBaseOptions: Array<{
+  value: Difficulty;
+  icon: typeof Gauge;
+}> = [
+  { value: "easy", icon: TimerReset },
+  { value: "medium", icon: Gauge },
+  { value: "hard", icon: Zap },
 ];
+
+const difficulties: Array<DifficultyOption> = difficultyBaseOptions.map((item) => ({
+  ...item,
+  label: difficultyProfiles[item.value].label,
+  detail: difficultyProfiles[item.value].detail,
+  metric: difficultyProfiles[item.value].metric,
+}));
 
 function HomeRoute() {
   const navigate = useNavigate();
@@ -234,7 +227,7 @@ function HomeRoute() {
                       </span>
                     </span>
                     <span className="shrink-0 text-xs font-bold text-(--color-accent)">
-                      {difficulty === item.value ? item.metric : ""}
+                      {item.metric}
                     </span>
                   </button>
                 );

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { difficultySettings, letterCharacters } from "@/data/characterSets";
+import { letterCharacters } from "@/data/characterSets";
+import { difficultyProfiles } from "@/data/difficultyProfiles";
 import { wordLists } from "@/data/wordLists";
 import { useReactionTracker } from "@/hooks/useReactionTracker";
 import {
@@ -66,7 +67,7 @@ export function useGameEngine({
   onComplete,
 }: UseGameEngineOptions) {
   const { getReactionSummary, recordReaction } = useReactionTracker();
-  const settings = difficultySettings[difficulty];
+  const settings = difficultyProfiles[difficulty];
   const tileValues = useMemo(
     () => (mode === "word" ? wordLists[difficulty] : letterCharacters[difficulty]),
     [difficulty, mode],

@@ -31,28 +31,3 @@ export const letterCharacters: Record<Difficulty, Array<string>> = {
     "/",
   ],
 };
-
-export const difficultySettings: Record<
-  Difficulty,
-  {
-    fallDurationMs: number;
-    spawnEveryMs: number;
-    maxActiveTiles: number;
-  }
-> = {
-  easy: {
-    fallDurationMs: 6400,
-    spawnEveryMs: 760,
-    maxActiveTiles: 7,
-  },
-  medium: {
-    fallDurationMs: 5400,
-    spawnEveryMs: 560,
-    maxActiveTiles: 10,
-  },
-  hard: {
-    fallDurationMs: 4600,
-    spawnEveryMs: 420,
-    maxActiveTiles: 13,
-  },
-};

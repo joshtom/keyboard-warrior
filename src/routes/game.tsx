@@ -4,6 +4,7 @@ import { CountdownTimer } from "@/components/CountdownTimer";
 import { GameBoard } from "@/components/GameBoard";
 import { ScoreDisplay } from "@/components/ScoreDisplay";
 import { Button } from "@/components/ui/button";
+import { difficultyProfiles } from "@/data/difficultyProfiles";
 import { rootRoute } from "@/routes/root";
 import { saveLatestGameResult } from "@/utils/gameResultStorage";
 import { useGameEngine } from "@/hooks/useGameEngine";
@@ -19,6 +20,7 @@ function GameRoute() {
   const navigate = useNavigate();
   const mode = search.mode ?? "letter";
   const difficulty = search.difficulty ?? "easy";
+  const difficultyProfile = difficultyProfiles[difficulty];
   const durationSeconds = 60;
   const game = useGameEngine({
     mode,
@@ -35,11 +37,15 @@ function GameRoute() {
       <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-xs font-semibold tracking-[0.22em] text-(--color-accent) uppercase">
-            {mode} / {difficulty}
+            {mode} / {difficultyProfile.label}
           </p>
           <h1 className="mt-1 text-2xl font-black text-(--color-text-primary)">
             Game Session
           </h1>
+          <p className="mt-1 text-xs text-(--color-text-secondary)">
+            {difficultyProfile.characterSummary} ·{" "}
+            {difficultyProfile.pressureSummary}
+          </p>
         </div>
         <Button onClick={() => navigate({ to: "/" })} size="sm" variant="ghost">
           Home

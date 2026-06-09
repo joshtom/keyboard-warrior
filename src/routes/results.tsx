@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { KeyboardHeatmap } from "@/components/KeyboardHeatmap";
 import { Button } from "@/components/ui/button";
+import { difficultyProfiles } from "@/data/difficultyProfiles";
 import { rootRoute } from "@/routes/root";
 import type { GameResult } from "@/types";
 import { readLatestGameResult } from "@/utils/gameResultStorage";
@@ -31,6 +32,7 @@ function getTopReactionEntries(result: GameResult) {
 
 function ResultsRoute() {
   const [result] = useState<GameResult | null>(() => readLatestGameResult());
+  const difficultyProfile = result ? difficultyProfiles[result.difficulty] : null;
   const statCards: Array<StatCard> = result
     ? [
         {
@@ -61,7 +63,7 @@ function ResultsRoute() {
         {
           label: "Duration",
           value: `${result.durationSeconds}s`,
-          detail: `${result.mode} / ${result.difficulty}`,
+          detail: `${result.mode} / ${difficultyProfile?.label ?? result.difficulty}`,
         },
       ]
     : [];
@@ -109,7 +111,7 @@ function ResultsRoute() {
                   Mode
                 </dt>
                 <dd className="mt-1.5 text-sm font-black text-(--color-text-primary) uppercase">
-                  {result.mode} / {result.difficulty}
+                  {result.mode} / {difficultyProfile?.label}
                 </dd>
               </div>
               <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) p-2.5">

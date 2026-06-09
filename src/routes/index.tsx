@@ -1,50 +1,94 @@
 import { createRoute, useNavigate } from "@tanstack/react-router";
-import { ChevronRight, Settings } from "lucide-react";
-import { useState } from "react";
+import {
+  ChevronRight,
+  Gauge,
+  Keyboard,
+  Settings,
+  TimerReset,
+  Type,
+  Zap,
+} from "lucide-react";
+import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { useIsCoarsePointer } from "@/hooks/useIsCoarsePointer";
 import { rootRoute } from "@/routes/root";
 import type { Difficulty, GameMode } from "@/types";
 
-const modes: Array<{ value: GameMode; label: string; detail: string }> = [
+type ModeOption = {
+  value: GameMode;
+  label: string;
+  detail: string;
+  icon: typeof Keyboard;
+  desktopOnly?: boolean;
+};
+
+type DifficultyOption = {
+  value: Difficulty;
+  label: string;
+  detail: string;
+  metric: string;
+  icon: typeof Gauge;
+};
+
+const modes: Array<ModeOption> = [
   {
     value: "letter",
     label: "Letter",
     detail: "Single-key reflex runs",
+    icon: Keyboard,
   },
   {
     value: "word",
     label: "Word",
     detail: "Full-word typing trials",
+    icon: Type,
+    desktopOnly: true,
   },
 ];
 
-const difficulties: Array<{
-  value: Difficulty;
-  label: string;
-  detail: string;
-}> = [
+const difficulties: Array<DifficultyOption> = [
   {
     value: "easy",
     label: "Easy",
     detail: "Slow, clean, focused",
+    metric: "1 tile",
+    icon: TimerReset,
   },
   {
     value: "medium",
     label: "Medium",
     detail: "More keys, more pressure",
+    metric: "2-3 tiles",
+    icon: Gauge,
   },
   {
     value: "hard",
     label: "Hard",
     detail: "Symbols in the storm",
+    metric: "3-5 tiles",
+    icon: Zap,
   },
 ];
 
 function HomeRoute() {
   const navigate = useNavigate();
+  const isCoarsePointer = useIsCoarsePointer();
   const [mode, setMode] = useState<GameMode>("letter");
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
+  const playableMode: GameMode = isCoarsePointer ? "letter" : mode;
+
+  const visibleModes = useMemo(
+    () => modes.filter((item) => !isCoarsePointer || !item.desktopOnly),
+    [isCoarsePointer],
+  );
+
+  const handlePlay = () => {
+    navigate({
+      to: "/game",
+      search: { mode: playableMode, difficulty },
+    });
+  };
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-5 sm:px-8 lg:px-10">
@@ -63,7 +107,7 @@ function HomeRoute() {
 
       <section className="grid flex-1 items-center gap-10 py-12 lg:grid-cols-[1.06fr_0.94fr] lg:py-8">
         <div className="max-w-3xl animate-[kw-fade-up_480ms_ease-out_both]">
-          <p className="mb-5 text-sm font-semibold tracking-[0.28em] text-(--color-accent) uppercase">
+          <p className="mb-5 text-sm font-semibold tracking-[0.22em] text-(--color-accent) uppercase">
             How well do you know your keyboard?
           </p>
           <h1 className="text-5xl leading-[0.95] font-black tracking-normal text-(--color-text-primary) sm:text-7xl lg:text-8xl">
@@ -74,29 +118,37 @@ function HomeRoute() {
             recall, and nerve.
           </p>
 
+          <dl className="mt-9 grid max-w-2xl grid-cols-3 border-y border-(--color-border-subtle) py-4">
+            <div>
+              <dt className="text-[0.65rem] font-semibold tracking-[0.18em] text-(--color-text-muted) uppercase">
+                Session
+              </dt>
+              <dd className="mt-2 text-sm font-bold text-(--color-text-primary)">
+                60s
+              </dd>
+            </div>
+            <div>
+              <dt className="text-[0.65rem] font-semibold tracking-[0.18em] text-(--color-text-muted) uppercase">
+                Input
+              </dt>
+              <dd className="mt-2 text-sm font-bold text-(--color-text-primary)">
+                {isCoarsePointer ? "Tap" : "Keys"}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-[0.65rem] font-semibold tracking-[0.18em] text-(--color-text-muted) uppercase">
+                Modes
+              </dt>
+              <dd className="mt-2 text-sm font-bold text-(--color-text-primary)">
+                {isCoarsePointer ? "1" : "2"}
+              </dd>
+            </div>
+          </dl>
+
           <div className="mt-9 flex flex-wrap gap-3">
-            <Button
-              onClick={() =>
-                navigate({
-                  to: "/game",
-                  search: { mode, difficulty },
-                })
-              }
-              size="lg"
-            >
+            <Button onClick={handlePlay} size="lg">
               Play
               <ChevronRight aria-hidden="true" />
-            </Button>
-            <Button
-              onClick={() =>
-                navigate({
-                  to: "/results",
-                })
-              }
-              size="lg"
-              variant="secondary"
-            >
-              Preview Results
             </Button>
           </div>
         </div>
@@ -108,7 +160,7 @@ function HomeRoute() {
                 Session Setup
               </h2>
               <p className="mt-1 text-xs text-(--color-text-muted)">
-                Feature one shell, ready for the engine.
+                Choose the run before the countdown starts.
               </p>
             </div>
             <div className="h-2 w-2 rounded-full bg-(--color-accent) shadow-[0_0_18px_var(--color-glow)]" />
@@ -119,23 +171,37 @@ function HomeRoute() {
               Mode
             </legend>
             <div className="grid gap-3 sm:grid-cols-2">
-              {modes.map((item) => (
-                <button
-                  aria-pressed={mode === item.value}
-                  className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) p-4 text-left transition-[background,border-color,transform] duration-150 ease-out hover:border-(--color-accent) active:scale-[0.99] aria-pressed:border-(--color-accent) aria-pressed:bg-(--color-accent-muted)"
-                  key={item.value}
-                  onClick={() => setMode(item.value)}
-                  type="button"
-                >
-                  <span className="block text-sm font-bold text-(--color-text-primary)">
-                    {item.label}
-                  </span>
-                  <span className="mt-1 block text-xs leading-5 text-(--color-text-secondary)">
-                    {item.detail}
-                  </span>
-                </button>
-              ))}
+              {visibleModes.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <button
+                    aria-pressed={playableMode === item.value}
+                    className="flex min-h-24 items-start gap-3 rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) p-4 text-left transition-[background,border-color,transform] duration-150 ease-out hover:border-(--color-accent) active:scale-[0.99] aria-pressed:border-(--color-accent) aria-pressed:bg-(--color-accent-muted)"
+                    key={item.value}
+                    onClick={() => setMode(item.value)}
+                    type="button"
+                  >
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-(--radius) border border-(--color-border-subtle) bg-(--color-bg-elevated) text-(--color-accent)">
+                      <Icon aria-hidden="true" className="h-4 w-4" />
+                    </span>
+                    <span>
+                      <span className="block text-sm font-bold text-(--color-text-primary)">
+                        {item.label}
+                      </span>
+                      <span className="mt-1 block text-xs leading-5 text-(--color-text-secondary)">
+                        {item.detail}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
             </div>
+            {isCoarsePointer ? (
+              <p className="text-xs leading-5 text-(--color-text-muted)">
+                Word Mode unlocks on desktop keyboards.
+              </p>
+            ) : null}
           </fieldset>
 
           <fieldset className="mt-6 space-y-3">
@@ -143,27 +209,36 @@ function HomeRoute() {
               Difficulty
             </legend>
             <div className="grid gap-3">
-              {difficulties.map((item) => (
-                <button
-                  aria-pressed={difficulty === item.value}
-                  className="flex items-center justify-between gap-4 rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) p-4 text-left transition-[background,border-color,transform] duration-150 ease-out hover:border-(--color-accent) active:scale-[0.99] aria-pressed:border-(--color-accent) aria-pressed:bg-(--color-accent-muted)"
-                  key={item.value}
-                  onClick={() => setDifficulty(item.value)}
-                  type="button"
-                >
-                  <span>
-                    <span className="block text-sm font-bold text-(--color-text-primary)">
-                      {item.label}
+              {difficulties.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <button
+                    aria-pressed={difficulty === item.value}
+                    className="flex items-center justify-between gap-4 rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) p-4 text-left transition-[background,border-color,transform] duration-150 ease-out hover:border-(--color-accent) active:scale-[0.99] aria-pressed:border-(--color-accent) aria-pressed:bg-(--color-accent-muted)"
+                    key={item.value}
+                    onClick={() => setDifficulty(item.value)}
+                    type="button"
+                  >
+                    <span className="flex items-center gap-3">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-(--radius) border border-(--color-border-subtle) bg-(--color-bg-elevated) text-(--color-accent)">
+                        <Icon aria-hidden="true" className="h-4 w-4" />
+                      </span>
+                      <span>
+                        <span className="block text-sm font-bold text-(--color-text-primary)">
+                          {item.label}
+                        </span>
+                        <span className="mt-1 block text-xs leading-5 text-(--color-text-secondary)">
+                          {item.detail}
+                        </span>
+                      </span>
                     </span>
-                    <span className="mt-1 block text-xs leading-5 text-(--color-text-secondary)">
-                      {item.detail}
+                    <span className="shrink-0 text-xs font-bold text-(--color-accent)">
+                      {difficulty === item.value ? item.metric : ""}
                     </span>
-                  </span>
-                  <span className="text-xs font-bold text-(--color-accent)">
-                    {difficulty === item.value ? "SELECTED" : ""}
-                  </span>
-                </button>
-              ))}
+                  </button>
+                );
+              })}
             </div>
           </fieldset>
         </div>

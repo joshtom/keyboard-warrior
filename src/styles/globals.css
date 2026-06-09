@@ -173,6 +173,24 @@ button:disabled {
   }
 }
 
+@keyframes kw-miss-flash {
+  0% {
+    background: transparent;
+  }
+
+  35% {
+    background: color-mix(
+      in srgb,
+      var(--color-error) 22%,
+      transparent
+    );
+  }
+
+  100% {
+    background: transparent;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

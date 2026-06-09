@@ -2,6 +2,7 @@ import { Link, createRoute } from "@tanstack/react-router";
 import { CalendarDays, Gauge, Home, RotateCcw, Trophy } from "lucide-react";
 import { useState } from "react";
 
+import { KeyboardHeatmap } from "@/components/KeyboardHeatmap";
 import { Button } from "@/components/ui/button";
 import { rootRoute } from "@/routes/root";
 import type { GameResult } from "@/types";
@@ -207,6 +208,11 @@ function ResultsRoute() {
                 )}
               </div>
             </div>
+
+            <KeyboardHeatmap
+              averageReactionMs={result.averageReactionMs}
+              perKeyAverageMs={result.perKeyAverageMs}
+            />
           </div>
         ) : (
           <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) p-5">

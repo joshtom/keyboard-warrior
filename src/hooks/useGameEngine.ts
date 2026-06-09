@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { difficultySettings, letterCharacters } from "@/data/characterSets";
 import { wordLists } from "@/data/wordLists";
+import { useReactionTracker } from "@/hooks/useReactionTracker";
 import {
   calculateAccuracy,
   calculateHitScore,
@@ -64,6 +65,7 @@ export function useGameEngine({
   durationSeconds,
   onComplete,
 }: UseGameEngineOptions) {
+  const { getReactionSummary, recordReaction } = useReactionTracker();
   const settings = difficultySettings[difficulty];
   const tileValues = useMemo(
     () => (mode === "word" ? wordLists[difficulty] : letterCharacters[difficulty]),
@@ -122,15 +124,18 @@ export function useGameEngine({
     setPhase("complete");
 
     const finalStats = statsRef.current;
+    const reactionSummary = getReactionSummary();
     onComplete({
       ...finalStats,
       mode,
       difficulty,
       durationSeconds,
       accuracy: calculateAccuracy(finalStats.hits, finalStats.misses),
+      averageReactionMs: reactionSummary.averageReactionMs,
+      perKeyAverageMs: reactionSummary.perKeyAverageMs,
       endedAt: new Date().toISOString(),
     });
-  }, [difficulty, durationSeconds, mode, onComplete]);
+  }, [difficulty, durationSeconds, getReactionSummary, mode, onComplete]);
 
   const hitTile = useCallback((tileId: string) => {
     if (phaseRef.current !== "playing") {
@@ -143,6 +148,7 @@ export function useGameEngine({
       return;
     }
 
+    recordReaction(targetTile);
     const nextTiles = tilesRef.current.filter((tile) => tile.id !== tileId);
     tilesRef.current = nextTiles;
     setTiles(nextTiles);
@@ -157,7 +163,7 @@ export function useGameEngine({
         longestCombo: Math.max(current.longestCombo, nextCombo),
       };
     });
-  }, []);
+  }, [recordReaction]);
 
   const applyTypedText = useCallback(
     (nextTypedText: string) => {

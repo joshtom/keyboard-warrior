@@ -24,10 +24,17 @@ export type GameStats = {
   longestCombo: number;
 };
 
+export type ReactionSummary = {
+  averageReactionMs: number;
+  perKeyAverageMs: Record<string, number>;
+};
+
 export type GameResult = GameStats & {
   mode: GameMode;
   difficulty: Difficulty;
   durationSeconds: number;
   accuracy: number;
+  averageReactionMs: number;
+  perKeyAverageMs: Record<string, number>;
   endedAt: string;
 };

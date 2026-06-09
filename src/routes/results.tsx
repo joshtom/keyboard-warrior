@@ -19,7 +19,7 @@ function ResultsRoute() {
           {result ? result.score : "Scorecard Slot Reserved"}
         </h1>
         {result ? (
-          <dl className="mt-6 grid grid-cols-2 gap-3 text-left sm:grid-cols-4">
+          <dl className="mt-6 grid grid-cols-2 gap-3 text-left sm:grid-cols-3">
             <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) p-3">
               <dt className="text-[0.65rem] font-semibold tracking-[0.16em] text-(--color-text-muted) uppercase">
                 Accuracy
@@ -34,6 +34,14 @@ function ResultsRoute() {
               </dt>
               <dd className="mt-2 text-lg font-black text-(--color-text-primary)">
                 {result.hits}
+              </dd>
+            </div>
+            <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) p-3">
+              <dt className="text-[0.65rem] font-semibold tracking-[0.16em] text-(--color-text-muted) uppercase">
+                Avg Speed
+              </dt>
+              <dd className="mt-2 text-lg font-black text-(--color-text-primary)">
+                {result.averageReactionMs}ms
               </dd>
             </div>
             <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) p-3">

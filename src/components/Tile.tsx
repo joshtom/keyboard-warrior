@@ -3,9 +3,15 @@ import type { TileState } from "@/types";
 type TileProps = {
   tile: TileState;
   onHit: (tileId: string) => void;
+  typedText?: string;
 };
 
-export function Tile({ tile, onHit }: TileProps) {
+export function Tile({ tile, onHit, typedText = "" }: TileProps) {
+  const matchedLength =
+    typedText && tile.value.startsWith(typedText) ? typedText.length : 0;
+  const matchedText = tile.value.slice(0, matchedLength);
+  const remainingText = tile.value.slice(matchedLength);
+
   return (
     <button
       aria-label={`Hit ${tile.value}`}
@@ -17,7 +23,14 @@ export function Tile({ tile, onHit }: TileProps) {
       }}
       type="button"
     >
-      {tile.value}
+      {matchedLength > 0 ? (
+        <span>
+          <span className="text-(--color-accent)">{matchedText}</span>
+          <span>{remainingText}</span>
+        </span>
+      ) : (
+        tile.value
+      )}
     </button>
   );
 }

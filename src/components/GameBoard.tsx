@@ -5,9 +5,15 @@ type GameBoardProps = {
   tiles: Array<TileState>;
   missFlashKey: number;
   onHitTile: (tileId: string) => void;
+  typedText?: string;
 };
 
-export function GameBoard({ tiles, missFlashKey, onHitTile }: GameBoardProps) {
+export function GameBoard({
+  tiles,
+  missFlashKey,
+  onHitTile,
+  typedText,
+}: GameBoardProps) {
   return (
     <section className="relative min-h-[560px] flex-1 overflow-hidden rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) shadow-[0_22px_90px_var(--color-shadow)]">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-linear-to-b from-(--color-bg-overlay) to-transparent" />
@@ -19,7 +25,12 @@ export function GameBoard({ tiles, missFlashKey, onHitTile }: GameBoardProps) {
         key={missFlashKey}
       />
       {tiles.map((tile) => (
-        <Tile key={tile.id} onHit={onHitTile} tile={tile} />
+        <Tile
+          key={tile.id}
+          onHit={onHitTile}
+          tile={tile}
+          typedText={typedText}
+        />
       ))}
     </section>
   );

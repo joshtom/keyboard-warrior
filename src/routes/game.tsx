@@ -5,6 +5,7 @@ import { GameBoard } from "@/components/GameBoard";
 import { ScoreDisplay } from "@/components/ScoreDisplay";
 import { Button } from "@/components/ui/button";
 import { difficultyProfiles } from "@/data/difficultyProfiles";
+import { useIsCoarsePointer } from "@/hooks/useIsCoarsePointer";
 import { rootRoute } from "@/routes/root";
 import { saveLatestGameResult } from "@/utils/gameResultStorage";
 import { useGameEngine } from "@/hooks/useGameEngine";
@@ -18,7 +19,10 @@ type GameSearch = {
 function GameRoute() {
   const search = useSearch({ from: "/game" }) as GameSearch;
   const navigate = useNavigate();
-  const mode = search.mode ?? "letter";
+  const isCoarsePointer = useIsCoarsePointer();
+  const requestedMode = search.mode ?? "letter";
+  const mode: GameMode =
+    isCoarsePointer && requestedMode === "word" ? "letter" : requestedMode;
   const difficulty = search.difficulty ?? "easy";
   const difficultyProfile = difficultyProfiles[difficulty];
   const durationSeconds = 60;
@@ -31,6 +35,10 @@ function GameRoute() {
       navigate({ to: "/results" });
     },
   });
+  const wordMatches =
+    mode === "word" && game.typedText
+      ? game.tiles.filter((tile) => tile.value.startsWith(game.typedText)).length
+      : 0;
 
   return (
     <main className="flex min-h-screen flex-col gap-4 px-4 py-4 sm:px-6">
@@ -61,13 +69,23 @@ function GameRoute() {
       </section>
 
       {mode === "word" ? (
-        <section className="mx-auto w-full max-w-6xl rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) px-4 py-3">
-          <p className="text-[0.65rem] font-semibold tracking-[0.18em] text-(--color-text-muted) uppercase">
-            Typed
-          </p>
-          <p className="mt-1 min-h-7 text-xl font-black text-(--color-accent)">
-            {game.typedText || ""}
-          </p>
+        <section className="mx-auto grid w-full max-w-6xl gap-3 rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) px-4 py-3 sm:grid-cols-[1fr_auto]">
+          <div>
+            <p className="text-[0.65rem] font-semibold tracking-[0.18em] text-(--color-text-muted) uppercase">
+              Typed
+            </p>
+            <p className="mt-1 min-h-7 text-xl font-black text-(--color-accent)">
+              {game.typedText || ""}
+            </p>
+          </div>
+          <div className="rounded-(--radius) border border-(--color-border-subtle) bg-(--color-bg-overlay) px-3 py-2">
+            <p className="text-[0.65rem] font-semibold tracking-[0.18em] text-(--color-text-muted) uppercase">
+              Matches
+            </p>
+            <p className="mt-1 text-lg font-black text-(--color-text-primary)">
+              {wordMatches}
+            </p>
+          </div>
         </section>
       ) : null}
 
@@ -75,6 +93,7 @@ function GameRoute() {
         <GameBoard
           missFlashKey={game.missFlashKey}
           onHitTile={game.hitTile}
+          typedText={mode === "word" ? game.typedText : ""}
           tiles={game.tiles}
         />
       </div>

@@ -6,6 +6,7 @@ import { ScoreDisplay } from "@/components/ScoreDisplay";
 import { Button } from "@/components/ui/button";
 import { difficultyProfiles } from "@/data/difficultyProfiles";
 import { useIsCoarsePointer } from "@/hooks/useIsCoarsePointer";
+import { useSettings } from "@/hooks/useSettings";
 import { rootRoute } from "@/routes/root";
 import { saveLatestGameResult } from "@/utils/gameResultStorage";
 import { useGameEngine } from "@/hooks/useGameEngine";
@@ -20,13 +21,14 @@ function GameRoute() {
   const search = useSearch({ from: "/game" }) as GameSearch;
   const navigate = useNavigate();
   const isCoarsePointer = useIsCoarsePointer();
+  const { settings } = useSettings();
   const requestedMode = search.mode ?? "letter";
   const wordModeFallback = isCoarsePointer && requestedMode === "word";
   const mode: GameMode =
     wordModeFallback ? "letter" : requestedMode;
   const difficulty = search.difficulty ?? "easy";
   const difficultyProfile = difficultyProfiles[difficulty];
-  const durationSeconds = 60;
+  const durationSeconds = settings.sessionDurationSeconds;
   const game = useGameEngine({
     mode,
     difficulty,

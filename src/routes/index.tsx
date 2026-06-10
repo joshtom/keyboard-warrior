@@ -13,6 +13,7 @@ import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { difficultyProfiles } from "@/data/difficultyProfiles";
 import { useIsCoarsePointer } from "@/hooks/useIsCoarsePointer";
+import { useSettings } from "@/hooks/useSettings";
 import { rootRoute } from "@/routes/root";
 import type { Difficulty, GameMode } from "@/types";
 
@@ -67,6 +68,7 @@ const difficulties: Array<DifficultyOption> = difficultyBaseOptions.map((item) =
 function HomeRoute() {
   const navigate = useNavigate();
   const isCoarsePointer = useIsCoarsePointer();
+  const { openSettings, settings } = useSettings();
   const [mode, setMode] = useState<GameMode>("letter");
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const playableMode: GameMode = isCoarsePointer ? "letter" : mode;
@@ -93,7 +95,12 @@ function HomeRoute() {
         >
           KW
         </a>
-        <Button aria-label="Open settings" size="icon" variant="ghost">
+        <Button
+          aria-label="Open settings"
+          onClick={openSettings}
+          size="icon"
+          variant="ghost"
+        >
           <Settings aria-hidden="true" />
         </Button>
       </header>
@@ -117,7 +124,7 @@ function HomeRoute() {
                 Session
               </dt>
               <dd className="mt-2 text-sm font-bold text-(--color-text-primary)">
-                60s
+                {settings.sessionDurationSeconds}s
               </dd>
             </div>
             <div>

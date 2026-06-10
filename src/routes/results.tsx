@@ -1,10 +1,11 @@
 import { Link, createRoute } from "@tanstack/react-router";
-import { CalendarDays, Gauge, Home, RotateCcw } from "lucide-react";
+import { CalendarDays, Gauge, Home, RotateCcw, Settings } from "lucide-react";
 import { useState } from "react";
 
 import { KeyboardHeatmap } from "@/components/KeyboardHeatmap";
 import { Button } from "@/components/ui/button";
 import { difficultyProfiles } from "@/data/difficultyProfiles";
+import { useSettings } from "@/hooks/useSettings";
 import { rootRoute } from "@/routes/root";
 import type { GameResult } from "@/types";
 import { readLatestGameResult } from "@/utils/gameResultStorage";
@@ -32,6 +33,7 @@ function getTopReactionEntries(result: GameResult) {
 
 function ResultsRoute() {
   const [result] = useState<GameResult | null>(() => readLatestGameResult());
+  const { openSettings } = useSettings();
   const difficultyProfile = result ? difficultyProfiles[result.difficulty] : null;
   const statCards: Array<StatCard> = result
     ? [
@@ -79,12 +81,22 @@ function ResultsRoute() {
         >
           KW
         </Link>
-        <Button asChild size="sm" variant="ghost">
-          <Link to="/">
-            <Home aria-hidden="true" />
-            Home
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            aria-label="Open settings"
+            onClick={openSettings}
+            size="icon"
+            variant="ghost"
+          >
+            <Settings aria-hidden="true" />
+          </Button>
+          <Button asChild size="sm" variant="ghost">
+            <Link to="/">
+              <Home aria-hidden="true" />
+              Home
+            </Link>
+          </Button>
+        </div>
       </header>
 
       <section className="grid flex-1 gap-3 py-3 sm:gap-4 sm:py-4 lg:grid-cols-[0.72fr_1.28fr]">

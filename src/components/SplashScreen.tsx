@@ -28,6 +28,7 @@ function readThemeColor(variableName: string) {
 }
 
 function FloatingKeyboard() {
+  const isCoarsePointer = useIsCoarsePointer();
   const modelRef = useRef<Group>(null);
   const { scene } = useGLTF("/assets/keyboard.glb");
 
@@ -45,7 +46,7 @@ function FloatingKeyboard() {
     <group
       ref={modelRef}
       rotation={[0.1, -0.42, 0]}
-      scale={8}
+      scale={isCoarsePointer ? 5.8 : 8}
     >
       <Center>
         <primitive object={scene} />
@@ -139,7 +140,7 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
           <p className="text-xs font-semibold tracking-[0.22em] text-(--color-accent) uppercase">
             Keyboard reaction arena
           </p>
-          <h1 className="mt-4 text-4xl leading-none font-black tracking-normal text-(--color-text-primary) sm:text-6xl lg:text-7xl">
+          <h1 className="mt-4 max-w-full text-2xl leading-none font-black tracking-normal text-(--color-text-primary) sm:text-6xl lg:text-7xl">
             Keyboard Warrior
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-sm leading-6 text-(--color-text-secondary) sm:text-base">

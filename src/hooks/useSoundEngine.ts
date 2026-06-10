@@ -19,13 +19,24 @@ type WindowWithAudioContext = Window & {
   webkitAudioContext?: AudioContextConstructor;
 };
 
-type MusicState = {
+type AudioMusicState = {
+  element: HTMLAudioElement;
+  kind: "audio";
+};
+
+type SynthMusicState = {
   gain: GainNode;
+  kind: "synth";
   oscillators: Array<OscillatorNode>;
 };
 
+type MusicState = AudioMusicState | SynthMusicState;
+
 let audioContext: AudioContext | null = null;
 let musicState: MusicState | null = null;
+let isMusicStartPending = false;
+
+const lofiMusicPath = "/assets/audio/lofi.mp3";
 
 function getAudioContext() {
   if (typeof window === "undefined") {
@@ -85,7 +96,16 @@ function playPattern(tones: Array<Tone>) {
 }
 
 function stopBackgroundMusic() {
+  isMusicStartPending = false;
+
   if (!musicState) {
+    return;
+  }
+
+  if (musicState.kind === "audio") {
+    musicState.element.pause();
+    musicState.element.currentTime = 0;
+    musicState = null;
     return;
   }
 
@@ -100,7 +120,7 @@ function stopBackgroundMusic() {
   musicState = null;
 }
 
-function startBackgroundMusic() {
+function startSynthBackgroundMusic() {
   if (musicState) {
     return;
   }
@@ -130,8 +150,49 @@ function startBackgroundMusic() {
 
   musicState = {
     gain,
+    kind: "synth",
     oscillators: [low, high],
   };
+}
+
+function startBackgroundMusic() {
+  if (musicState || isMusicStartPending || typeof window === "undefined") {
+    return;
+  }
+
+  isMusicStartPending = true;
+  void fetch(lofiMusicPath, { method: "HEAD" })
+    .then((response) => {
+      if (!isMusicStartPending || musicState) {
+        return;
+      }
+
+      isMusicStartPending = false;
+
+      if (!response.ok) {
+        startSynthBackgroundMusic();
+        return;
+      }
+
+      const element = new Audio(lofiMusicPath);
+      element.loop = true;
+      element.volume = 0.24;
+      musicState = {
+        element,
+        kind: "audio",
+      };
+
+      void element.play().catch(() => {
+        if (musicState?.kind === "audio" && musicState.element === element) {
+          musicState = null;
+          startSynthBackgroundMusic();
+        }
+      });
+    })
+    .catch(() => {
+      isMusicStartPending = false;
+      startSynthBackgroundMusic();
+    });
 }
 
 export function useSoundEngine() {

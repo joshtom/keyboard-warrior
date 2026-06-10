@@ -122,8 +122,8 @@ function HomeRoute() {
             Keyboard Warrior
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-7 text-(--color-text-secondary) sm:text-lg">
-            A fast reaction arena where falling keys test your rhythm, recall,
-            and nerve.
+            A focused typing sprint where falling keys test your rhythm,
+            recall, and nerve.
           </p>
 
           <dl className="mt-9 grid max-w-2xl grid-cols-3 border-y border-(--color-border-subtle) py-4">

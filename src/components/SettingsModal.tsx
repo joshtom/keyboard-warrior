@@ -49,12 +49,9 @@ export function SettingsModal() {
     <Dialog open={isSettingsOpen} onOpenChange={setSettingsOpen}>
       <DialogContent onEscapeKeyDown={closeSettings}>
         <DialogHeader>
-          <p className="text-xs font-semibold tracking-[0.22em] text-(--color-accent) uppercase">
-            Preferences
-          </p>
           <DialogTitle>Settings</DialogTitle>
           <DialogDescription>
-            Tune each run before stepping back into the arena.
+            Tune each run before stepping back into the sprint.
           </DialogDescription>
         </DialogHeader>
 
@@ -126,7 +123,7 @@ export function SettingsModal() {
                     Background Music
                   </span>
                   <span className="mt-1 block text-xs text-(--color-text-secondary)">
-                    Optional ambient loop for future sound.
+                    Lofi loop when an audio file is available.
                   </span>
                 </span>
               </span>

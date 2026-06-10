@@ -138,7 +138,7 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
 
         <div className="animate-[kw-fade-up_560ms_120ms_ease-out_both]">
           <p className="text-xs font-semibold tracking-[0.22em] text-(--color-accent) uppercase">
-            Keyboard reaction arena
+            Keyboard reflex test
           </p>
           <h1 className="mt-4 max-w-full text-2xl leading-none font-black tracking-normal text-(--color-text-primary) sm:text-6xl lg:text-7xl">
             Keyboard Warrior

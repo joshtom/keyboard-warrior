@@ -1,14 +1,23 @@
 import { Link, createRoute } from "@tanstack/react-router";
-import { CalendarDays, Gauge, Home, RotateCcw, Settings } from "lucide-react";
-import { useState } from "react";
+import {
+  CalendarDays,
+  Download,
+  Gauge,
+  Home,
+  RotateCcw,
+  Settings,
+} from "lucide-react";
+import { useRef, useState } from "react";
 
 import { KeyboardHeatmap } from "@/components/KeyboardHeatmap";
+import { ResultsCard } from "@/components/ResultsCard";
 import { Button } from "@/components/ui/button";
 import { difficultyProfiles } from "@/data/difficultyProfiles";
 import { useSoundEngine } from "@/hooks/useSoundEngine";
 import { useSettings } from "@/hooks/useSettings";
 import { rootRoute } from "@/routes/root";
 import type { GameResult } from "@/types";
+import { downloadElementAsPng } from "@/utils/cardExport";
 import { readLatestGameResult } from "@/utils/gameResultStorage";
 
 type StatCard = {
@@ -32,8 +41,16 @@ function getTopReactionEntries(result: GameResult) {
     .slice(0, 6);
 }
 
+function getCardFileName(result: GameResult) {
+  const dateStamp = result.endedAt.slice(0, 10);
+
+  return `keyboard-warrior-${result.mode}-${result.difficulty}-${dateStamp}.png`;
+}
+
 function ResultsRoute() {
   const [result] = useState<GameResult | null>(() => readLatestGameResult());
+  const [isExporting, setIsExporting] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
   const sound = useSoundEngine();
   const { openSettings } = useSettings();
   const difficultyProfile = result ? difficultyProfiles[result.difficulty] : null;
@@ -72,6 +89,20 @@ function ResultsRoute() {
       ]
     : [];
   const topReactionEntries = result ? getTopReactionEntries(result) : [];
+  const handleDownloadCard = async () => {
+    if (!result || !cardRef.current || isExporting) {
+      return;
+    }
+
+    setIsExporting(true);
+    sound.playDownload();
+
+    try {
+      await downloadElementAsPng(cardRef.current, getCardFileName(result));
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 py-3 sm:px-8 sm:py-4 lg:px-10">
@@ -165,6 +196,16 @@ function ResultsRoute() {
             <Button asChild variant="secondary">
               <Link onClick={sound.playButtonClick} to="/">Home</Link>
             </Button>
+            {result ? (
+              <Button
+                disabled={isExporting}
+                onClick={handleDownloadCard}
+                variant="secondary"
+              >
+                <Download aria-hidden="true" />
+                {isExporting ? "Preparing" : "Download Card"}
+              </Button>
+            ) : null}
           </div>
         </div>
 
@@ -238,6 +279,20 @@ function ResultsRoute() {
           </div>
         )}
       </section>
+
+      {result ? (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed top-0"
+          style={{ left: -10000 }}
+        >
+          <ResultsCard
+            difficultyLabel={difficultyProfile?.label ?? result.difficulty}
+            ref={cardRef}
+            result={result}
+          />
+        </div>
+      ) : null}
     </main>
   );
 }

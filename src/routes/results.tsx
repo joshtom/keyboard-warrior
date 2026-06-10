@@ -171,7 +171,7 @@ function ResultsRoute() {
               ))}
             </dl>
 
-            <div className="flex flex-wrap items-center gap-2 rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) p-3">
+            <div className="flex flex-col flex-wrap items-start gap-2 rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) p-3 sm:flex-row sm:items-center">
               <h2 className="shrink-0 text-sm font-black text-(--color-text-primary)">
                 Fastest
               </h2>

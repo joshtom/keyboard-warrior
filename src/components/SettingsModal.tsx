@@ -123,7 +123,7 @@ export function SettingsModal() {
                     Background Music
                   </span>
                   <span className="mt-1 block text-xs text-(--color-text-secondary)">
-                    Lofi loop when an audio file is available.
+                    Gentle lofi focus loop for each run.
                   </span>
                 </span>
               </span>

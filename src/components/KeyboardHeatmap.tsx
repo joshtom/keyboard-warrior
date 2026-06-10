@@ -9,11 +9,53 @@ type HeatmapKey = {
   label: string;
 };
 
-const keyRows: Array<Array<HeatmapKey>> = [
-  "1234567890".split("").map((label) => ({ label })),
-  "qwertyuiop".split("").map((label) => ({ label })),
-  "asdfghjkl".split("").map((label) => ({ label })),
-  "zxcvbnm".split("").map((label) => ({ label })),
+type HeatmapRow = {
+  indent: number;
+  keys: Array<HeatmapKey>;
+};
+
+const keyRows: Array<HeatmapRow> = [
+  {
+    indent: 0,
+    keys: "1234567890".split("").map((label) => ({ label })),
+  },
+  {
+    indent: 10,
+    keys: "qwertyuiop".split("").map((label) => ({ label })),
+  },
+  {
+    indent: 20,
+    keys: "asdfghjkl".split("").map((label) => ({ label })),
+  },
+  {
+    indent: 30,
+    keys: "zxcvbnm".split("").map((label) => ({ label })),
+  },
+  {
+    indent: 0,
+    keys: [
+      "!",
+      "@",
+      "#",
+      "$",
+      "%",
+      "^",
+      "&",
+      "*",
+      "(",
+      ")",
+      "-",
+      "=",
+      "+",
+      "[",
+      "]",
+      ";",
+      "'",
+      ",",
+      ".",
+      "/",
+    ].map((label) => ({ label })),
+  },
 ];
 
 function getKeyAverage(label: string, perKeyAverageMs: Record<string, number>) {
@@ -41,16 +83,17 @@ export function KeyboardHeatmap({
       </div>
 
       <div className="mt-2 space-y-1 overflow-x-auto pb-1 sm:mt-3 sm:space-y-1.5">
-        {keyRows.map((row, rowIndex) => (
+        {keyRows.map((row) => (
           <div
-            className="grid min-w-[320px] gap-1 sm:min-w-110 sm:gap-1.5"
-            key={row.map((item) => item.label).join("")}
+            className="grid gap-1 sm:gap-1.5"
+            key={row.keys.map((item) => item.label).join("")}
             style={{
-              gridTemplateColumns: `repeat(${row.length}, minmax(0, 1fr))`,
-              paddingLeft: `${rowIndex * 10}px`,
+              gridTemplateColumns: `repeat(${row.keys.length}, minmax(0, 1fr))`,
+              minWidth: Math.max(320, row.keys.length * 32),
+              paddingLeft: row.indent,
             }}
           >
-            {row.map((keyItem) => {
+            {row.keys.map((keyItem) => {
               const reactionMs = getKeyAverage(
                 keyItem.label,
                 perKeyAverageMs,

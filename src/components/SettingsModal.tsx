@@ -1,4 +1,5 @@
 import { Clock, Music2, Volume2 } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 import {
   Dialog,
@@ -8,6 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
+import { useSoundEngine } from "@/hooks/useSoundEngine";
 import {
   useSettings,
   type SessionDurationSeconds,
@@ -21,6 +23,8 @@ const sessionDurationOptions: Array<SessionDurationSeconds> = [
 ];
 
 export function SettingsModal() {
+  const sound = useSoundEngine();
+  const wasOpenRef = useRef(false);
   const {
     closeSettings,
     isSettingsOpen,
@@ -28,6 +32,18 @@ export function SettingsModal() {
     settings,
     updateSettings,
   } = useSettings();
+
+  useEffect(() => {
+    if (isSettingsOpen && !wasOpenRef.current) {
+      sound.playModalOpen();
+    }
+
+    if (!isSettingsOpen && wasOpenRef.current) {
+      sound.playModalClose();
+    }
+
+    wasOpenRef.current = isSettingsOpen;
+  }, [isSettingsOpen, sound]);
 
   return (
     <Dialog open={isSettingsOpen} onOpenChange={setSettingsOpen}>
@@ -64,9 +80,10 @@ export function SettingsModal() {
                   aria-pressed={settings.sessionDurationSeconds === duration}
                   className="h-10 rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) text-xs font-black text-(--color-text-primary) transition-[background,border-color,color,transform] duration-150 hover:border-(--color-accent) active:scale-[0.98] aria-pressed:border-(--color-accent) aria-pressed:bg-(--color-accent-muted) aria-pressed:text-(--color-accent)"
                   key={duration}
-                  onClick={() =>
-                    updateSettings({ sessionDurationSeconds: duration })
-                  }
+                  onClick={() => {
+                    sound.playSelectorChange();
+                    updateSettings({ sessionDurationSeconds: duration });
+                  }}
                   type="button"
                 >
                   {duration}s
@@ -92,9 +109,10 @@ export function SettingsModal() {
               </span>
               <Switch
                 checked={settings.soundEffectsEnabled}
-                onCheckedChange={(soundEffectsEnabled) =>
-                  updateSettings({ soundEffectsEnabled })
-                }
+                onCheckedChange={(soundEffectsEnabled) => {
+                  sound.playSelectorChange();
+                  updateSettings({ soundEffectsEnabled });
+                }}
               />
             </label>
 
@@ -114,9 +132,10 @@ export function SettingsModal() {
               </span>
               <Switch
                 checked={settings.backgroundMusicEnabled}
-                onCheckedChange={(backgroundMusicEnabled) =>
-                  updateSettings({ backgroundMusicEnabled })
-                }
+                onCheckedChange={(backgroundMusicEnabled) => {
+                  sound.playSelectorChange();
+                  updateSettings({ backgroundMusicEnabled });
+                }}
               />
             </label>
           </section>

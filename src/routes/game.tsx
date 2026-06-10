@@ -1,4 +1,5 @@
 import { createRoute, useNavigate, useSearch } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
 
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { GameBoard } from "@/components/GameBoard";
@@ -6,6 +7,7 @@ import { ScoreDisplay } from "@/components/ScoreDisplay";
 import { Button } from "@/components/ui/button";
 import { difficultyProfiles } from "@/data/difficultyProfiles";
 import { useIsCoarsePointer } from "@/hooks/useIsCoarsePointer";
+import { useSoundEngine } from "@/hooks/useSoundEngine";
 import { useSettings } from "@/hooks/useSettings";
 import { rootRoute } from "@/routes/root";
 import { saveLatestGameResult } from "@/utils/gameResultStorage";
@@ -21,6 +23,7 @@ function GameRoute() {
   const search = useSearch({ from: "/game" }) as GameSearch;
   const navigate = useNavigate();
   const isCoarsePointer = useIsCoarsePointer();
+  const sound = useSoundEngine();
   const { settings } = useSettings();
   const requestedMode = search.mode ?? "letter";
   const wordModeFallback = isCoarsePointer && requestedMode === "word";
@@ -34,11 +37,34 @@ function GameRoute() {
     difficulty,
     durationSeconds,
     isTouchMode: isCoarsePointer,
+    onComboBreak: sound.playComboBreak,
     onComplete: (result) => {
       saveLatestGameResult(result);
       navigate({ to: "/results" });
     },
+    onHit: (streakCount) => {
+      sound.playHit();
+
+      if (streakCount >= 5) {
+        sound.playCombo(streakCount);
+      }
+    },
+    onMiss: sound.playMiss,
+    onSessionEnd: sound.playSessionEnd,
   });
+  const lastTimeLeftRef = useRef(game.timeLeft);
+
+  useEffect(() => {
+    if (
+      game.timeLeft !== lastTimeLeftRef.current &&
+      game.timeLeft > 0 &&
+      game.timeLeft <= 3
+    ) {
+      sound.playCountdownTick();
+    }
+
+    lastTimeLeftRef.current = game.timeLeft;
+  }, [game.timeLeft, sound]);
   const wordMatches =
     mode === "word" && game.typedText
       ? game.tiles.filter((tile) => tile.value.startsWith(game.typedText)).length
@@ -67,7 +93,14 @@ function GameRoute() {
             </p>
           ) : null}
         </div>
-        <Button onClick={() => navigate({ to: "/" })} size="sm" variant="ghost">
+        <Button
+          onClick={() => {
+            sound.playButtonClick();
+            navigate({ to: "/" });
+          }}
+          size="sm"
+          variant="ghost"
+        >
           Home
         </Button>
       </header>

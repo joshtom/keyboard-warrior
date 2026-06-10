@@ -23,7 +23,11 @@ type UseGameEngineOptions = {
   difficulty: Difficulty;
   durationSeconds: number;
   isTouchMode?: boolean;
+  onComboBreak?: () => void;
   onComplete: (result: GameResult) => void;
+  onHit?: (streakCount: number) => void;
+  onMiss?: () => void;
+  onSessionEnd?: () => void;
 };
 
 type GamePhase = "playing" | "complete";
@@ -66,7 +70,11 @@ export function useGameEngine({
   difficulty,
   durationSeconds,
   isTouchMode = false,
+  onComboBreak,
   onComplete,
+  onHit,
+  onMiss,
+  onSessionEnd,
 }: UseGameEngineOptions) {
   const { getReactionSummary, recordReaction } = useReactionTracker();
   const settings = useMemo(() => {
@@ -113,22 +121,31 @@ export function useGameEngine({
     phaseRef.current = phase;
   }, [phase]);
 
-  const registerMiss = useCallback((missedCount = 1) => {
-    if (missedCount <= 0) {
-      return;
-    }
+  const registerMiss = useCallback(
+    (missedCount = 1) => {
+      if (missedCount <= 0) {
+        return;
+      }
 
-    setMissFlashKey((current) => current + 1);
-    setStats((current) => ({
-      ...current,
-      score: Array.from({ length: missedCount }).reduce<number>(
-        (score) => calculateMissScore(score),
-        current.score,
-      ),
-      misses: current.misses + missedCount,
-      combo: 0,
-    }));
-  }, []);
+      onMiss?.();
+
+      if (statsRef.current.combo > 0) {
+        onComboBreak?.();
+      }
+
+      setMissFlashKey((current) => current + 1);
+      setStats((current) => ({
+        ...current,
+        score: Array.from({ length: missedCount }).reduce<number>(
+          (score) => calculateMissScore(score),
+          current.score,
+        ),
+        misses: current.misses + missedCount,
+        combo: 0,
+      }));
+    },
+    [onComboBreak, onMiss],
+  );
 
   const completeSession = useCallback(() => {
     if (completedRef.current) {
@@ -137,6 +154,7 @@ export function useGameEngine({
 
     completedRef.current = true;
     setPhase("complete");
+    onSessionEnd?.();
 
     const finalStats = statsRef.current;
     const reactionSummary = getReactionSummary();
@@ -150,7 +168,14 @@ export function useGameEngine({
       perKeyAverageMs: reactionSummary.perKeyAverageMs,
       endedAt: new Date().toISOString(),
     });
-  }, [difficulty, durationSeconds, getReactionSummary, mode, onComplete]);
+  }, [
+    difficulty,
+    durationSeconds,
+    getReactionSummary,
+    mode,
+    onComplete,
+    onSessionEnd,
+  ]);
 
   const hitTile = useCallback((tileId: string) => {
     if (phaseRef.current !== "playing") {
@@ -167,6 +192,7 @@ export function useGameEngine({
     const nextTiles = tilesRef.current.filter((tile) => tile.id !== tileId);
     tilesRef.current = nextTiles;
     setTiles(nextTiles);
+    onHit?.(statsRef.current.combo + 1);
     setStats((current) => {
       const nextCombo = current.combo + 1;
 
@@ -178,7 +204,7 @@ export function useGameEngine({
         longestCombo: Math.max(current.longestCombo, nextCombo),
       };
     });
-  }, [recordReaction]);
+  }, [onHit, recordReaction]);
 
   const applyTypedText = useCallback(
     (nextTypedText: string) => {

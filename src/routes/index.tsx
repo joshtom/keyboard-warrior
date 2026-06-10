@@ -13,6 +13,7 @@ import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { difficultyProfiles } from "@/data/difficultyProfiles";
 import { useIsCoarsePointer } from "@/hooks/useIsCoarsePointer";
+import { useSoundEngine } from "@/hooks/useSoundEngine";
 import { useSettings } from "@/hooks/useSettings";
 import { rootRoute } from "@/routes/root";
 import type { Difficulty, GameMode } from "@/types";
@@ -68,6 +69,7 @@ const difficulties: Array<DifficultyOption> = difficultyBaseOptions.map((item) =
 function HomeRoute() {
   const navigate = useNavigate();
   const isCoarsePointer = useIsCoarsePointer();
+  const sound = useSoundEngine();
   const { openSettings, settings } = useSettings();
   const [mode, setMode] = useState<GameMode>("letter");
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
@@ -79,10 +81,16 @@ function HomeRoute() {
   );
 
   const handlePlay = () => {
+    sound.playButtonClick();
     navigate({
       to: "/game",
       search: { mode: playableMode, difficulty },
     });
+  };
+
+  const handleOpenSettings = () => {
+    sound.playButtonClick();
+    openSettings();
   };
 
   return (
@@ -97,7 +105,7 @@ function HomeRoute() {
         </a>
         <Button
           aria-label="Open settings"
-          onClick={openSettings}
+          onClick={handleOpenSettings}
           size="icon"
           variant="ghost"
         >
@@ -179,7 +187,10 @@ function HomeRoute() {
                     aria-pressed={playableMode === item.value}
                     className="flex min-h-24 items-start gap-3 rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) p-4 text-left transition-[background,border-color,transform] duration-150 ease-out hover:border-(--color-accent) active:scale-[0.99] aria-pressed:border-(--color-accent) aria-pressed:bg-(--color-accent-muted)"
                     key={item.value}
-                    onClick={() => setMode(item.value)}
+                    onClick={() => {
+                      sound.playSelectorChange();
+                      setMode(item.value);
+                    }}
                     type="button"
                   >
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-(--radius) border border-(--color-border-subtle) bg-(--color-bg-elevated) text-(--color-accent)">
@@ -217,7 +228,10 @@ function HomeRoute() {
                     aria-pressed={difficulty === item.value}
                     className="flex items-center justify-between gap-4 rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) p-4 text-left transition-[background,border-color,transform] duration-150 ease-out hover:border-(--color-accent) active:scale-[0.99] aria-pressed:border-(--color-accent) aria-pressed:bg-(--color-accent-muted)"
                     key={item.value}
-                    onClick={() => setDifficulty(item.value)}
+                    onClick={() => {
+                      sound.playSelectorChange();
+                      setDifficulty(item.value);
+                    }}
                     type="button"
                   >
                     <span className="flex items-center gap-3">

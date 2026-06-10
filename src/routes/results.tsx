@@ -5,6 +5,7 @@ import { useState } from "react";
 import { KeyboardHeatmap } from "@/components/KeyboardHeatmap";
 import { Button } from "@/components/ui/button";
 import { difficultyProfiles } from "@/data/difficultyProfiles";
+import { useSoundEngine } from "@/hooks/useSoundEngine";
 import { useSettings } from "@/hooks/useSettings";
 import { rootRoute } from "@/routes/root";
 import type { GameResult } from "@/types";
@@ -33,6 +34,7 @@ function getTopReactionEntries(result: GameResult) {
 
 function ResultsRoute() {
   const [result] = useState<GameResult | null>(() => readLatestGameResult());
+  const sound = useSoundEngine();
   const { openSettings } = useSettings();
   const difficultyProfile = result ? difficultyProfiles[result.difficulty] : null;
   const statCards: Array<StatCard> = result
@@ -84,14 +86,17 @@ function ResultsRoute() {
         <div className="flex items-center gap-2">
           <Button
             aria-label="Open settings"
-            onClick={openSettings}
+            onClick={() => {
+              sound.playButtonClick();
+              openSettings();
+            }}
             size="icon"
             variant="ghost"
           >
             <Settings aria-hidden="true" />
           </Button>
           <Button asChild size="sm" variant="ghost">
-            <Link to="/">
+            <Link onClick={sound.playButtonClick} to="/">
               <Home aria-hidden="true" />
               Home
             </Link>
@@ -146,6 +151,7 @@ function ResultsRoute() {
           <div className="mt-4 flex flex-wrap gap-2 sm:gap-3">
             <Button asChild>
               <Link
+                onClick={sound.playButtonClick}
                 to="/game"
                 search={{
                   mode: result?.mode ?? "letter",
@@ -157,7 +163,7 @@ function ResultsRoute() {
               </Link>
             </Button>
             <Button asChild variant="secondary">
-              <Link to="/">Home</Link>
+              <Link onClick={sound.playButtonClick} to="/">Home</Link>
             </Button>
           </div>
         </div>

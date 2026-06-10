@@ -107,8 +107,8 @@ function HomeRoute() {
             Keyboard Warrior
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-7 text-(--color-text-secondary) sm:text-lg">
-            A fast reaction typing arena where falling keys test your rhythm,
-            recall, and nerve.
+            A fast reaction arena where falling keys test your rhythm, recall,
+            and nerve.
           </p>
 
           <dl className="mt-9 grid max-w-2xl grid-cols-3 border-y border-(--color-border-subtle) py-4">
@@ -125,7 +125,7 @@ function HomeRoute() {
                 Input
               </dt>
               <dd className="mt-2 text-sm font-bold text-(--color-text-primary)">
-                {isCoarsePointer ? "Tap" : "Keys"}
+                {isCoarsePointer ? "Tap tiles" : "Keyboard"}
               </dd>
             </div>
             <div>

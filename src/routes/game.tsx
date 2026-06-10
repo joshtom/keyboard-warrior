@@ -21,8 +21,9 @@ function GameRoute() {
   const navigate = useNavigate();
   const isCoarsePointer = useIsCoarsePointer();
   const requestedMode = search.mode ?? "letter";
+  const wordModeFallback = isCoarsePointer && requestedMode === "word";
   const mode: GameMode =
-    isCoarsePointer && requestedMode === "word" ? "letter" : requestedMode;
+    wordModeFallback ? "letter" : requestedMode;
   const difficulty = search.difficulty ?? "easy";
   const difficultyProfile = difficultyProfiles[difficulty];
   const durationSeconds = 60;
@@ -54,6 +55,12 @@ function GameRoute() {
             {difficultyProfile.characterSummary} ·{" "}
             {difficultyProfile.pressureSummary}
           </p>
+          {isCoarsePointer ? (
+            <p className="mt-1 text-xs font-semibold text-(--color-accent)">
+              Tap tiles directly.
+              {wordModeFallback ? " Word Mode is desktop-only." : ""}
+            </p>
+          ) : null}
         </div>
         <Button onClick={() => navigate({ to: "/" })} size="sm" variant="ghost">
           Home
@@ -91,6 +98,7 @@ function GameRoute() {
 
       <div className="mx-auto flex w-full max-w-6xl flex-1">
         <GameBoard
+          isTouchMode={isCoarsePointer}
           missFlashKey={game.missFlashKey}
           onHitTile={game.hitTile}
           typedText={mode === "word" ? game.typedText : ""}

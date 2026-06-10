@@ -43,7 +43,7 @@ export function KeyboardHeatmap({
       <div className="mt-2 space-y-1 overflow-x-auto pb-1 sm:mt-3 sm:space-y-1.5">
         {keyRows.map((row, rowIndex) => (
           <div
-            className="grid min-w-[320px] gap-1 sm:min-w-[440px] sm:gap-1.5"
+            className="grid min-w-[320px] gap-1 sm:min-w-110 sm:gap-1.5"
             key={row.map((item) => item.label).join("")}
             style={{
               gridTemplateColumns: `repeat(${row.length}, minmax(0, 1fr))`,

@@ -129,7 +129,7 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
               </div>
             }
           >
-            <div className="h-full w-full [&_canvas]:!h-full [&_canvas]:!w-full">
+            <div className="h-full w-full [&_canvas]:h-full! [&_canvas]:w-full!">
               <SplashScene />
             </div>
           </Suspense>

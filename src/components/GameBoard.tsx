@@ -18,7 +18,7 @@ export function GameBoard({
 }: GameBoardProps) {
   return (
     <section
-      className="relative min-h-[560px] flex-1 overflow-hidden rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) shadow-[0_22px_90px_var(--color-shadow)] data-[touch=true]:min-h-[520px]"
+      className="relative min-h-140 flex-1 overflow-hidden rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) shadow-[0_22px_90px_var(--color-shadow)] data-[touch=true]:min-h-[520px]"
       data-touch={isTouchMode ? "true" : "false"}
     >
       <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-linear-to-b from-(--color-bg-overlay) to-transparent" />

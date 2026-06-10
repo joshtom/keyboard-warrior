@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const coarsePointerQuery = "(pointer: coarse)";
+const coarsePointerQuery = "(pointer: coarse), (max-width: 767px)";
 
 function readIsCoarsePointer() {
   if (typeof window === "undefined") {

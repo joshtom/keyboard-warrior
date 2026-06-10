@@ -31,6 +31,7 @@ function GameRoute() {
     mode,
     difficulty,
     durationSeconds,
+    isTouchMode: isCoarsePointer,
     onComplete: (result) => {
       saveLatestGameResult(result);
       navigate({ to: "/results" });
@@ -53,7 +54,9 @@ function GameRoute() {
           </h1>
           <p className="mt-1 text-xs text-(--color-text-secondary)">
             {difficultyProfile.characterSummary} ·{" "}
-            {difficultyProfile.pressureSummary}
+            {isCoarsePointer
+              ? "faster tap stream"
+              : difficultyProfile.pressureSummary}
           </p>
           {isCoarsePointer ? (
             <p className="mt-1 text-xs font-semibold text-(--color-accent)">

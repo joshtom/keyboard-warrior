@@ -70,7 +70,7 @@ function ResultsRoute() {
   const topReactionEntries = result ? getTopReactionEntries(result) : [];
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-5 py-4 sm:px-8 lg:px-10">
+    <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 py-3 sm:px-8 sm:py-4 lg:px-10">
       <header className="flex items-center justify-between">
         <Link
           aria-label="Keyboard Warrior home"
@@ -87,8 +87,8 @@ function ResultsRoute() {
         </Button>
       </header>
 
-      <section className="grid flex-1 gap-4 py-5 lg:grid-cols-[0.72fr_1.28fr]">
-        <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) p-4 shadow-[0_22px_90px_var(--color-shadow)]">
+      <section className="grid flex-1 gap-3 py-3 sm:gap-4 sm:py-4 lg:grid-cols-[0.72fr_1.28fr]">
+        <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) p-3 shadow-[0_22px_90px_var(--color-shadow)] sm:p-4">
           <div>
             <p className="text-xs font-semibold tracking-[0.22em] text-(--color-accent) uppercase">
               Results
@@ -97,14 +97,14 @@ function ResultsRoute() {
               <p className="text-sm text-(--color-text-secondary)">
                 Final Score
               </p>
-              <h1 className="mt-1 text-6xl leading-none font-black text-(--color-text-primary) tabular-nums">
+              <h1 className="mt-1 text-4xl leading-none font-black text-(--color-text-primary) tabular-nums sm:text-6xl">
                 {result ? result.score : 0}
               </h1>
             </div>
           </div>
 
           {result ? (
-            <dl className="mt-5 grid grid-cols-2 gap-2">
+            <dl className="mt-4 grid grid-cols-2 gap-2">
               <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) p-2.5">
                 <dt className="flex items-center gap-2 text-[0.65rem] font-semibold tracking-[0.16em] text-(--color-text-muted) uppercase">
                   <Gauge aria-hidden="true" className="h-3.5 w-3.5" />
@@ -131,7 +131,7 @@ function ResultsRoute() {
             </p>
           )}
 
-          <div className="mt-5 flex flex-wrap gap-3">
+          <div className="mt-4 flex flex-wrap gap-2 sm:gap-3">
             <Button asChild>
               <Link
                 to="/game"
@@ -151,31 +151,31 @@ function ResultsRoute() {
         </div>
 
         {result ? (
-          <div className="grid gap-3 lg:grid-rows-[auto_auto_1fr]">
+          <div className="grid gap-2 sm:gap-3 lg:grid-rows-[auto_auto_1fr]">
             <dl className="grid grid-cols-3 gap-2">
               {statCards.map((item) => (
                 <div
-                  className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) p-3"
+                  className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) p-2 sm:p-3"
                   key={item.label}
                 >
-                  <dt className="text-[0.65rem] font-semibold tracking-[0.16em] text-(--color-text-muted) uppercase">
+                  <dt className="text-[0.58rem] font-semibold tracking-[0.16em] text-(--color-text-muted) uppercase sm:text-[0.65rem]">
                     {item.label}
                   </dt>
-                  <dd className="mt-1.5 text-xl font-black text-(--color-text-primary) tabular-nums">
+                  <dd className="mt-1 text-sm font-black text-(--color-text-primary) tabular-nums sm:mt-1.5 sm:text-xl">
                     {item.value}
                   </dd>
-                  <p className="mt-1 text-xs leading-4 text-(--color-text-secondary)">
+                  <p className="mt-1 hidden text-xs leading-4 text-(--color-text-secondary) sm:block">
                     {item.detail}
                   </p>
                 </div>
               ))}
             </dl>
 
-            <div className="flex items-center gap-2 rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) p-3">
+            <div className="flex flex-wrap items-center gap-2 rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) p-3">
               <h2 className="shrink-0 text-sm font-black text-(--color-text-primary)">
                 Fastest
               </h2>
-              <div className="flex min-w-0 flex-1 gap-2 overflow-hidden">
+              <div className="flex min-w-0 flex-1 flex-wrap gap-2 overflow-hidden">
                 {topReactionEntries.length > 0 ? (
                   topReactionEntries.slice(0, 4).map(([key, averageMs]) => (
                     <div

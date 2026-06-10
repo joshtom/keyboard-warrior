@@ -22,6 +22,7 @@ type UseGameEngineOptions = {
   mode: GameMode;
   difficulty: Difficulty;
   durationSeconds: number;
+  isTouchMode?: boolean;
   onComplete: (result: GameResult) => void;
 };
 
@@ -64,10 +65,23 @@ export function useGameEngine({
   mode,
   difficulty,
   durationSeconds,
+  isTouchMode = false,
   onComplete,
 }: UseGameEngineOptions) {
   const { getReactionSummary, recordReaction } = useReactionTracker();
-  const settings = difficultyProfiles[difficulty];
+  const settings = useMemo(() => {
+    const profile = difficultyProfiles[difficulty];
+
+    if (!isTouchMode) {
+      return profile;
+    }
+
+    return {
+      ...profile,
+      fallDurationMs: Math.round(profile.fallDurationMs * 0.78),
+      spawnEveryMs: Math.round(profile.spawnEveryMs * 0.84),
+    };
+  }, [difficulty, isTouchMode]);
   const tileValues = useMemo(
     () => (mode === "word" ? wordLists[difficulty] : letterCharacters[difficulty]),
     [difficulty, mode],

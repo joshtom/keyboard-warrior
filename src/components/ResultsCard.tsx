@@ -1,6 +1,5 @@
-import { forwardRef } from "react";
+import { forwardRef, type CSSProperties } from "react";
 
-import { KeyboardHeatmap } from "@/components/KeyboardHeatmap";
 import type { GameResult } from "@/types";
 
 type ResultsCardProps = {
@@ -8,112 +7,99 @@ type ResultsCardProps = {
   result: GameResult;
 };
 
-function formatCardDate(value: string) {
-  return new Intl.DateTimeFormat(undefined, {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(value));
-}
+const scoreTextStyle: CSSProperties = {
+  fontSize: 190,
+  textShadow: "0 10px 0 var(--color-shadow)",
+};
+
+const statTextStyle: CSSProperties = {
+  fontSize: 72,
+  textShadow: "0 7px 0 var(--color-shadow)",
+};
 
 export const ResultsCard = forwardRef<HTMLDivElement, ResultsCardProps>(
   ({ difficultyLabel, result }, ref) => (
     <article
-      className="overflow-hidden border border-(--color-border) bg-(--color-bg) p-10 font-mono text-(--color-text-primary)"
+      className="overflow-hidden border border-(--color-border) bg-(--color-bg-elevated) p-16 font-mono text-(--color-text-primary) shadow-[0_28px_120px_var(--color-shadow)]"
       ref={ref}
       style={{
-        height: 630,
-        width: 1200,
+        borderRadius: 32,
+        height: 1080,
+        width: 1080,
       }}
     >
-      <div className="flex h-full flex-col">
-        <header className="flex items-start justify-between gap-8">
+      <div className="flex h-full flex-col justify-between">
+        <section>
+          <p className="text-4xl font-black tracking-[0.24em] text-(--color-text-secondary) uppercase">
+            Final Score
+          </p>
+          <p
+            className="mt-12 leading-none font-black tabular-nums text-(--color-accent)"
+            style={scoreTextStyle}
+          >
+            {result.score}
+          </p>
+
+          <div className="mt-16 flex flex-wrap gap-5">
+            <span className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) px-8 py-6 text-3xl font-black text-(--color-text-primary) uppercase shadow-[0_12px_0_var(--color-shadow)]">
+              {result.mode} mode
+            </span>
+            <span className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) px-8 py-6 text-3xl font-black text-(--color-text-primary) uppercase shadow-[0_12px_0_var(--color-shadow)]">
+              {difficultyLabel}
+            </span>
+          </div>
+        </section>
+
+        <dl className="grid grid-cols-2 gap-x-20 gap-y-12">
           <div>
-            <p className="text-sm font-bold tracking-[0.24em] text-(--color-accent) uppercase">
-              Keyboard Warrior
-            </p>
-            <h2 className="mt-3 text-5xl leading-none font-black">
-              How well do you know your keyboard?
-            </h2>
+            <dt className="text-3xl font-black tracking-[0.22em] text-(--color-text-muted) uppercase">
+              Accuracy
+            </dt>
+            <dd
+              className="mt-5 leading-none font-black tabular-nums"
+              style={statTextStyle}
+            >
+              {result.accuracy}%
+            </dd>
           </div>
-          <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) px-4 py-3 text-right">
-            <p className="text-xs font-semibold tracking-[0.18em] text-(--color-text-muted) uppercase">
-              Played
-            </p>
-            <p className="mt-1 text-lg font-black">
-              {formatCardDate(result.endedAt)}
-            </p>
+          <div>
+            <dt className="text-3xl font-black tracking-[0.22em] text-(--color-text-muted) uppercase">
+              Avg Speed
+            </dt>
+            <dd
+              className="mt-5 leading-none font-black tabular-nums"
+              style={statTextStyle}
+            >
+              {result.averageReactionMs}ms
+            </dd>
           </div>
-        </header>
+          <div>
+            <dt className="text-3xl font-black tracking-[0.22em] text-(--color-text-muted) uppercase">
+              Hits
+            </dt>
+            <dd
+              className="mt-5 leading-none font-black tabular-nums"
+              style={statTextStyle}
+            >
+              {result.hits}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-3xl font-black tracking-[0.22em] text-(--color-text-muted) uppercase">
+              Longest Combo
+            </dt>
+            <dd
+              className="mt-5 leading-none font-black tabular-nums"
+              style={statTextStyle}
+            >
+              {result.longestCombo}
+            </dd>
+          </div>
+        </dl>
 
-        <div className="mt-8 grid min-h-0 flex-1 grid-cols-[0.8fr_1.2fr] gap-8">
-          <section className="flex flex-col justify-between rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) p-6">
-            <div>
-              <p className="text-sm font-bold tracking-[0.2em] text-(--color-text-secondary) uppercase">
-                Final Score
-              </p>
-              <p className="mt-3 text-8xl leading-none font-black tabular-nums text-(--color-accent)">
-                {result.score}
-              </p>
-              <div className="mt-5 flex flex-wrap gap-2">
-                <span className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) px-3 py-2 text-sm font-black uppercase">
-                  {result.mode} mode
-                </span>
-                <span className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) px-3 py-2 text-sm font-black uppercase">
-                  {difficultyLabel}
-                </span>
-              </div>
-            </div>
-
-            <dl className="grid grid-cols-2 gap-3">
-              <div>
-                <dt className="text-xs font-bold tracking-[0.16em] text-(--color-text-muted) uppercase">
-                  Accuracy
-                </dt>
-                <dd className="mt-1 text-3xl font-black tabular-nums">
-                  {result.accuracy}%
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs font-bold tracking-[0.16em] text-(--color-text-muted) uppercase">
-                  Avg Speed
-                </dt>
-                <dd className="mt-1 text-3xl font-black tabular-nums">
-                  {result.averageReactionMs}ms
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs font-bold tracking-[0.16em] text-(--color-text-muted) uppercase">
-                  Hits
-                </dt>
-                <dd className="mt-1 text-3xl font-black tabular-nums">
-                  {result.hits}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs font-bold tracking-[0.16em] text-(--color-text-muted) uppercase">
-                  Longest Combo
-                </dt>
-                <dd className="mt-1 text-3xl font-black tabular-nums">
-                  {result.longestCombo}
-                </dd>
-              </div>
-            </dl>
-          </section>
-
-          <section className="min-w-0">
-            <KeyboardHeatmap
-              averageReactionMs={result.averageReactionMs}
-              perKeyAverageMs={result.perKeyAverageMs}
-            />
-            <div className="mt-4 rounded-(--radius) border border-(--color-border) bg-(--color-bg-elevated) px-4 py-3">
-              <p className="text-sm leading-6 text-(--color-text-secondary)">
-                Green keys were faster than the session average. Red keys need
-                a rematch.
-              </p>
-            </div>
-          </section>
-        </div>
+        <p className="text-right text-2xl font-black tracking-[0.2em] text-(--color-text-muted) uppercase">
+          Keyboard Warrior
+        </p>
       </div>
     </article>
   ),

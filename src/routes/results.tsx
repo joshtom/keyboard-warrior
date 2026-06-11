@@ -2,9 +2,11 @@ import { Link, createRoute } from "@tanstack/react-router";
 import {
   CalendarDays,
   Download,
+  ExternalLink,
   Gauge,
   Home,
   RotateCcw,
+  Share2,
   Settings,
   Trophy,
 } from "lucide-react";
@@ -20,6 +22,11 @@ import { rootRoute } from "@/routes/root";
 import type { GameResult } from "@/types";
 import { downloadElementAsPng } from "@/utils/cardExport";
 import { readLatestGameResult } from "@/utils/gameResultStorage";
+import {
+  openLinkedInShare,
+  openXShare,
+  shareScoreCard,
+} from "@/utils/socialShare";
 
 type StatCard = {
   label: string;
@@ -80,6 +87,8 @@ function getProgressBadges(result: GameResult): Array<ProgressBadge> {
 function ResultsRoute() {
   const [result] = useState<GameResult | null>(() => readLatestGameResult());
   const [isExporting, setIsExporting] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
+  const [shareMessage, setShareMessage] = useState("");
   const cardRef = useRef<HTMLDivElement>(null);
   const sound = useSoundEngine();
   const { openSettings } = useSettings();
@@ -133,6 +142,43 @@ function ResultsRoute() {
     } finally {
       setIsExporting(false);
     }
+  };
+  const handleShareCard = async () => {
+    if (!result || !cardRef.current || isSharing) {
+      return;
+    }
+
+    setIsSharing(true);
+    setShareMessage("");
+    sound.playButtonClick();
+
+    try {
+      await shareScoreCard({
+        element: cardRef.current,
+        fileName: getCardFileName(result),
+        result,
+      });
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        return;
+      }
+
+      setShareMessage("Native sharing is unavailable here. Try X, LinkedIn, or Download.");
+    } finally {
+      setIsSharing(false);
+    }
+  };
+  const handleXShare = () => {
+    if (!result) {
+      return;
+    }
+
+    sound.playButtonClick();
+    openXShare(result);
+  };
+  const handleLinkedInShare = () => {
+    sound.playButtonClick();
+    openLinkedInShare();
   };
 
   return (
@@ -264,16 +310,39 @@ function ResultsRoute() {
               <Link onClick={sound.playButtonClick} to="/">Home</Link>
             </Button>
             {result ? (
-              <Button
-                disabled={isExporting}
-                onClick={handleDownloadCard}
-                variant="secondary"
-              >
-                <Download aria-hidden="true" />
-                {isExporting ? "Preparing" : "Download Card"}
-              </Button>
+              <>
+                <Button
+                  disabled={isSharing}
+                  onClick={handleShareCard}
+                  variant="secondary"
+                >
+                  <Share2 aria-hidden="true" />
+                  {isSharing ? "Sharing" : "Share Card"}
+                </Button>
+                <Button onClick={handleXShare} variant="secondary">
+                  <ExternalLink aria-hidden="true" />
+                  X
+                </Button>
+                <Button onClick={handleLinkedInShare} variant="secondary">
+                  <ExternalLink aria-hidden="true" />
+                  LinkedIn
+                </Button>
+                <Button
+                  disabled={isExporting}
+                  onClick={handleDownloadCard}
+                  variant="secondary"
+                >
+                  <Download aria-hidden="true" />
+                  {isExporting ? "Preparing" : "Download Card"}
+                </Button>
+              </>
             ) : null}
           </div>
+          {shareMessage ? (
+            <p className="mt-3 text-xs leading-5 text-(--color-warning)">
+              {shareMessage}
+            </p>
+          ) : null}
         </div>
 
         {result ? (

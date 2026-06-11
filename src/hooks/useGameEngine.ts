@@ -30,7 +30,7 @@ type UseGameEngineOptions = {
   onSessionEnd?: () => void;
 };
 
-type GamePhase = "playing" | "complete";
+type GamePhase = "countdown" | "playing" | "complete";
 
 const initialStats: GameStats = {
   score: 0,
@@ -94,7 +94,8 @@ export function useGameEngine({
     () => (mode === "word" ? wordLists[difficulty] : letterCharacters[difficulty]),
     [difficulty, mode],
   );
-  const [phase, setPhase] = useState<GamePhase>("playing");
+  const [phase, setPhase] = useState<GamePhase>("countdown");
+  const [countdownValue, setCountdownValue] = useState(3);
   const [tiles, setTiles] = useState<Array<TileState>>([]);
   const [stats, setStats] = useState<GameStats>(initialStats);
   const [timeLeft, setTimeLeft] = useState(durationSeconds);
@@ -102,7 +103,7 @@ export function useGameEngine({
   const [missFlashKey, setMissFlashKey] = useState(0);
   const statsRef = useRef(stats);
   const tilesRef = useRef(tiles);
-  const phaseRef = useRef<GamePhase>("playing");
+  const phaseRef = useRef<GamePhase>("countdown");
   const completedRef = useRef(false);
   const startedAtRef = useRef<number | null>(null);
   const lastSpawnedAtRef = useRef(0);
@@ -120,6 +121,23 @@ export function useGameEngine({
   useEffect(() => {
     phaseRef.current = phase;
   }, [phase]);
+
+  useEffect(() => {
+    if (phase !== "countdown") {
+      return;
+    }
+
+    if (countdownValue <= 0) {
+      window.setTimeout(() => setPhase("playing"), 420);
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setCountdownValue((current) => Math.max(0, current - 1));
+    }, 820);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [countdownValue, phase]);
 
   const registerMiss = useCallback(
     (missedCount = 1) => {
@@ -273,6 +291,11 @@ export function useGameEngine({
     let animationFrameId = 0;
 
     const tick = (now: number) => {
+      if (phaseRef.current !== "playing") {
+        animationFrameId = window.requestAnimationFrame(tick);
+        return;
+      }
+
       if (startedAtRef.current === null) {
         startedAtRef.current = now;
         lastSpawnedAtRef.current = now - settings.spawnEveryMs;
@@ -329,6 +352,7 @@ export function useGameEngine({
 
   return {
     phase,
+    countdownValue,
     tiles,
     stats,
     timeLeft,

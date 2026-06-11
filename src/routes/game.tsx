@@ -59,6 +59,7 @@ function GameRoute() {
     onSessionEnd: sound.playSessionEnd,
   });
   const lastTimeLeftRef = useRef(game.timeLeft);
+  const lastCountdownValueRef = useRef(game.countdownValue + 1);
 
   useEffect(() => {
     if (
@@ -71,6 +72,21 @@ function GameRoute() {
 
     lastTimeLeftRef.current = game.timeLeft;
   }, [game.timeLeft, sound]);
+
+  useEffect(() => {
+    if (
+      game.phase === "countdown" &&
+      game.countdownValue !== lastCountdownValueRef.current
+    ) {
+      if (game.countdownValue > 0) {
+        sound.playCountdownTick();
+      } else {
+        sound.playCountdownGo();
+      }
+    }
+
+    lastCountdownValueRef.current = game.countdownValue;
+  }, [game.countdownValue, game.phase, sound]);
   const wordMatches =
     mode === "word" && game.typedText
       ? game.tiles.filter((tile) => tile.value.startsWith(game.typedText)).length
@@ -114,6 +130,7 @@ function GameRoute() {
       <section className="mx-auto grid w-full max-w-6xl gap-4 sm:grid-cols-[1fr_auto]">
         <ScoreDisplay
           comboMultiplier={game.comboMultiplier}
+          pulseKey={game.stats.combo}
           stats={game.stats}
         />
         <CountdownTimer timeLeft={game.timeLeft} />
@@ -142,9 +159,11 @@ function GameRoute() {
 
       <div className="mx-auto flex w-full max-w-6xl flex-1">
         <GameBoard
+          countdownValue={game.countdownValue}
           isTouchMode={isCoarsePointer}
           missFlashKey={game.missFlashKey}
           onHitTile={game.hitTile}
+          phase={game.phase}
           typedText={mode === "word" ? game.typedText : ""}
           tiles={game.tiles}
         />

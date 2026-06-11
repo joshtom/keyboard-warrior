@@ -6,6 +6,7 @@ import {
   Home,
   RotateCcw,
   Settings,
+  Trophy,
 } from "lucide-react";
 import { useRef, useState } from "react";
 
@@ -24,6 +25,11 @@ type StatCard = {
   label: string;
   value: string;
   detail: string;
+};
+
+type ProgressBadge = {
+  label: string;
+  value: string;
 };
 
 function formatDate(value: string) {
@@ -45,6 +51,30 @@ function getCardFileName(result: GameResult) {
   const dateStamp = result.endedAt.slice(0, 10);
 
   return `keyboard-warrior-${result.mode}-${result.difficulty}-${dateStamp}.png`;
+}
+
+function getProgressBadges(result: GameResult): Array<ProgressBadge> {
+  const progress = result.progress;
+
+  if (!progress) {
+    return [];
+  }
+
+  return [
+    progress.newBests.score
+      ? { label: "Score", value: `${result.score}` }
+      : null,
+    progress.newBests.accuracy
+      ? { label: "Accuracy", value: `${result.accuracy}%` }
+      : null,
+    progress.newBests.averageReactionMs
+      ? { label: "Avg Speed", value: `${result.averageReactionMs}ms` }
+      : null,
+    progress.newBests.hits ? { label: "Hits", value: `${result.hits}` } : null,
+    progress.newBests.longestCombo
+      ? { label: "Combo", value: `${result.longestCombo}` }
+      : null,
+  ].filter((item): item is ProgressBadge => item !== null);
 }
 
 function ResultsRoute() {
@@ -89,6 +119,7 @@ function ResultsRoute() {
       ]
     : [];
   const topReactionEntries = result ? getTopReactionEntries(result) : [];
+  const progressBadges = result ? getProgressBadges(result) : [];
   const handleDownloadCard = async () => {
     if (!result || !cardRef.current || isExporting) {
       return;
@@ -152,26 +183,62 @@ function ResultsRoute() {
           </div>
 
           {result ? (
-            <dl className="mt-4 grid grid-cols-2 gap-2">
-              <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) p-2.5">
-                <dt className="flex items-center gap-2 text-[0.65rem] font-semibold tracking-[0.16em] text-(--color-text-muted) uppercase">
-                  <Gauge aria-hidden="true" className="h-3.5 w-3.5" />
-                  Mode
-                </dt>
-                <dd className="mt-1.5 text-sm font-black text-(--color-text-primary) uppercase">
-                  {result.mode} / {difficultyProfile?.label}
-                </dd>
-              </div>
-              <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) p-2.5">
-                <dt className="flex items-center gap-2 text-[0.65rem] font-semibold tracking-[0.16em] text-(--color-text-muted) uppercase">
-                  <CalendarDays aria-hidden="true" className="h-3.5 w-3.5" />
-                  Played
-                </dt>
-                <dd className="mt-1.5 text-sm font-black text-(--color-text-primary)">
-                  {formatDate(result.endedAt)}
-                </dd>
-              </div>
-            </dl>
+            <>
+              <dl className="mt-4 grid grid-cols-2 gap-2">
+                <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) p-2.5">
+                  <dt className="flex items-center gap-2 text-[0.65rem] font-semibold tracking-[0.16em] text-(--color-text-muted) uppercase">
+                    <Gauge aria-hidden="true" className="h-3.5 w-3.5" />
+                    Mode
+                  </dt>
+                  <dd className="mt-1.5 text-sm font-black text-(--color-text-primary) uppercase">
+                    {result.mode} / {difficultyProfile?.label}
+                  </dd>
+                </div>
+                <div className="rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) p-2.5">
+                  <dt className="flex items-center gap-2 text-[0.65rem] font-semibold tracking-[0.16em] text-(--color-text-muted) uppercase">
+                    <CalendarDays aria-hidden="true" className="h-3.5 w-3.5" />
+                    Played
+                  </dt>
+                  <dd className="mt-1.5 text-sm font-black text-(--color-text-primary)">
+                    {formatDate(result.endedAt)}
+                  </dd>
+                </div>
+              </dl>
+
+              <section className="mt-3 rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) p-3">
+                <div className="flex items-center gap-2">
+                  <Trophy
+                    aria-hidden="true"
+                    className="h-4 w-4 text-(--color-accent)"
+                  />
+                  <h2 className="text-xs font-black tracking-[0.18em] text-(--color-text-primary) uppercase">
+                    Player Progress
+                  </h2>
+                </div>
+                {progressBadges.length > 0 ? (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {progressBadges.map((badge) => (
+                      <div
+                        className="rounded-(--radius) border border-(--color-accent) bg-(--color-accent-muted) px-2.5 py-1.5"
+                        key={badge.label}
+                      >
+                        <p className="text-[0.58rem] font-bold tracking-[0.14em] text-(--color-accent) uppercase">
+                          New {badge.label}
+                        </p>
+                        <p className="mt-0.5 text-xs font-black text-(--color-text-primary)">
+                          {badge.value}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="mt-2 text-xs leading-5 text-(--color-text-secondary)">
+                    No personal best this run. Your records are saved per mode
+                    and difficulty.
+                  </p>
+                )}
+              </section>
+            </>
           ) : (
             <p className="mt-6 text-sm leading-6 text-(--color-text-secondary)">
               Finish a session to see score, reaction timing, accuracy, and

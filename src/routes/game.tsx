@@ -11,6 +11,7 @@ import { useSoundEngine } from "@/hooks/useSoundEngine";
 import { useSettings } from "@/hooks/useSettings";
 import { rootRoute } from "@/routes/root";
 import { saveLatestGameResult } from "@/utils/gameResultStorage";
+import { updatePlayerProgress } from "@/utils/playerProgressStorage";
 import { useGameEngine } from "@/hooks/useGameEngine";
 import type { Difficulty, GameMode } from "@/types";
 
@@ -39,7 +40,12 @@ function GameRoute() {
     isTouchMode: isCoarsePointer,
     onComboBreak: sound.playComboBreak,
     onComplete: (result) => {
-      saveLatestGameResult(result);
+      const progress = updatePlayerProgress(result);
+
+      saveLatestGameResult({
+        ...result,
+        progress,
+      });
       navigate({ to: "/results" });
     },
     onHit: (streakCount) => {

@@ -17,6 +17,7 @@ import { useSoundEngine } from "@/hooks/useSoundEngine";
 import { useSettings } from "@/hooks/useSettings";
 import { rootRoute } from "@/routes/root";
 import type { Difficulty, GameMode } from "@/types";
+import { readPlayerBest } from "@/utils/playerProgressStorage";
 
 type ModeOption = {
   value: GameMode;
@@ -74,6 +75,10 @@ function HomeRoute() {
   const [mode, setMode] = useState<GameMode>("letter");
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const playableMode: GameMode = isCoarsePointer ? "letter" : mode;
+  const personalBest = useMemo(
+    () => readPlayerBest(playableMode, difficulty),
+    [difficulty, playableMode],
+  );
 
   const visibleModes = useMemo(
     () => modes.filter((item) => !isCoarsePointer || !item.desktopOnly),
@@ -173,6 +178,44 @@ function HomeRoute() {
             </div>
             <div className="h-2 w-2 rounded-full bg-(--color-accent) shadow-[0_0_18px_var(--color-glow)]" />
           </div>
+
+          <section className="mb-5 rounded-(--radius) border border-(--color-border) bg-(--color-bg-overlay) p-3">
+            <p className="text-[0.65rem] font-semibold tracking-[0.18em] text-(--color-text-muted) uppercase">
+              Personal Best
+            </p>
+            {personalBest ? (
+              <dl className="mt-3 grid grid-cols-3 gap-2">
+                <div>
+                  <dt className="text-[0.58rem] font-semibold tracking-[0.14em] text-(--color-text-muted) uppercase">
+                    Score
+                  </dt>
+                  <dd className="mt-1 text-sm font-black text-(--color-text-primary) tabular-nums">
+                    {personalBest.score}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-[0.58rem] font-semibold tracking-[0.14em] text-(--color-text-muted) uppercase">
+                    Speed
+                  </dt>
+                  <dd className="mt-1 text-sm font-black text-(--color-text-primary) tabular-nums">
+                    {personalBest.averageReactionMs}ms
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-[0.58rem] font-semibold tracking-[0.14em] text-(--color-text-muted) uppercase">
+                    Combo
+                  </dt>
+                  <dd className="mt-1 text-sm font-black text-(--color-text-primary) tabular-nums">
+                    {personalBest.longestCombo}
+                  </dd>
+                </div>
+              </dl>
+            ) : (
+              <p className="mt-2 text-xs leading-5 text-(--color-text-secondary)">
+                No saved run yet for this mode and difficulty.
+              </p>
+            )}
+          </section>
 
           <fieldset className="space-y-3">
             <legend className="mb-3 text-xs font-semibold tracking-[0.16em] text-(--color-text-secondary) uppercase">

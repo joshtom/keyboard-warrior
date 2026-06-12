@@ -17,6 +17,15 @@ type SplashScreenProps = {
   onDismiss: () => void;
 };
 
+const scramblePhrases = [
+  "QWERTY - TYUIO",
+  "ASDFGH - JKL;",
+  "ZXCVBN - NM,.",
+  "KEYBOARD REFLEX TEST",
+];
+
+const scrambleCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789;,. -";
+
 function readThemeColor(variableName: string) {
   if (typeof window === "undefined") {
     return "";
@@ -25,6 +34,76 @@ function readThemeColor(variableName: string) {
   return getComputedStyle(document.documentElement)
     .getPropertyValue(variableName)
     .trim();
+}
+
+function getRandomScrambleCharacter() {
+  return scrambleCharacters[
+    Math.floor(Math.random() * scrambleCharacters.length)
+  ];
+}
+
+function shouldReduceMotion() {
+  return (
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
+function getInitialScrambleText(phrases: Array<string>) {
+  if (phrases.length === 0) {
+    return "";
+  }
+
+  return shouldReduceMotion() ? phrases[phrases.length - 1] : phrases[0];
+}
+
+function useScrambledText(phrases: Array<string>) {
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [displayText, setDisplayText] = useState(() =>
+    getInitialScrambleText(phrases),
+  );
+
+  useEffect(() => {
+    if (phrases.length === 0 || shouldReduceMotion()) {
+      return;
+    }
+
+    const targetPhrase = phrases[phraseIndex];
+    let frame = 0;
+    const frameLimit = 18;
+    const intervalId = window.setInterval(() => {
+      frame += 1;
+      const resolvedCharacters = Math.ceil(
+        (frame / frameLimit) * targetPhrase.length,
+      );
+
+      setDisplayText(
+        targetPhrase
+          .split("")
+          .map((character, index) =>
+            index < resolvedCharacters || character === " "
+              ? character
+              : getRandomScrambleCharacter(),
+          )
+          .join(""),
+      );
+
+      if (frame >= frameLimit) {
+        window.clearInterval(intervalId);
+        setDisplayText(targetPhrase);
+      }
+    }, 42);
+    const nextPhraseTimeoutId = window.setTimeout(() => {
+      setPhraseIndex((currentIndex) => (currentIndex + 1) % phrases.length);
+    }, 1800);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.clearTimeout(nextPhraseTimeoutId);
+    };
+  }, [phraseIndex, phrases]);
+
+  return displayText;
 }
 
 function FloatingKeyboard() {
@@ -46,7 +125,7 @@ function FloatingKeyboard() {
     <group
       ref={modelRef}
       rotation={[0.1, -0.42, 0]}
-      scale={isCoarsePointer ? 5.8 : 8}
+      scale={isCoarsePointer ? 5.2 : 8}
     >
       <Center>
         <primitive object={scene} />
@@ -91,6 +170,7 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
   const isCoarsePointer = useIsCoarsePointer();
   const sound = useSoundEngine();
   const [isLeaving, setIsLeaving] = useState(false);
+  const eyebrowText = useScrambledText(scramblePhrases);
 
   const dismiss = useCallback(() => {
     if (isLeaving) {
@@ -137,8 +217,8 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
         </div>
 
         <div className="animate-[kw-fade-up_560ms_120ms_ease-out_both]">
-          <p className="text-xs font-semibold tracking-[0.22em] text-(--color-accent) uppercase">
-            Keyboard reflex test
+          <p className="min-h-4 text-xs font-semibold tracking-[0.22em] text-(--color-accent) uppercase">
+            {eyebrowText}
           </p>
           <h1 className="mt-4 max-w-full text-2xl leading-none font-black tracking-normal text-(--color-text-primary) sm:text-6xl lg:text-7xl">
             Keyboard Warrior

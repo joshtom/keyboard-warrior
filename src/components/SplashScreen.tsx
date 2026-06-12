@@ -21,10 +21,20 @@ const scramblePhrases = [
   "QWERTY - TYUIO",
   "ASDFGH - JKL;",
   "ZXCVBN - NM,.",
+  "12345 - 67890",
+  "!@#$% - ^&*()",
+  "[]{} - <>/?",
+  "`~_- - +=|\\",
+  "CTRL - ALT - DEL",
+  "SHIFT - ENTER",
+  "TAB - SPACE",
+  "TYPE - TAP - WIN",
+  "0X1A - 9F7C",
   "KEYBOARD REFLEX TEST",
 ];
 
-const scrambleCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789;,. -";
+const scrambleCharacters =
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()[]{}<>/?;:,.`~_-+=|\\ ";
 
 function readThemeColor(variableName: string) {
   if (typeof window === "undefined") {

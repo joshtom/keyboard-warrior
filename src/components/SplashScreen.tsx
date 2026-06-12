@@ -1,5 +1,5 @@
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Center, useGLTF } from "@react-three/drei";
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Center, useGLTF } from '@react-three/drei';
 import {
   Suspense,
   useCallback,
@@ -7,38 +7,38 @@ import {
   useMemo,
   useRef,
   useState,
-} from "react";
-import type { Group } from "three";
+} from 'react';
+import type { Group } from 'three';
 
-import { useIsCoarsePointer } from "@/hooks/useIsCoarsePointer";
-import { useSoundEngine } from "@/hooks/useSoundEngine";
+import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer';
+import { useSoundEngine } from '@/hooks/useSoundEngine';
 
 type SplashScreenProps = {
   onDismiss: () => void;
 };
 
 const scramblePhrases = [
-  "QWERTY - TYUIO",
-  "ASDFGH - JKL;",
-  "ZXCVBN - NM,.",
-  "12345 - 67890",
-  "!@#$% - ^&*()",
-  "[]{} - <>/?",
-  "`~_- - +=|\\",
-  "CTRL - ALT - DEL",
-  "SHIFT - ENTER",
-  "TAB - SPACE",
-  "TYPE - TAP - WIN",
-  "0X1A - 9F7C",
-  "KEYBOARD REFLEX TEST",
+  'KEYBOARD REFLEX TEST',
+  'QWERTY - TYUIO',
+  'ASDFGH - JKL;',
+  'ZXCVBN - NM,.',
+  '12345 - 67890',
+  '!@#$% - ^&*()',
+  '[]{} - <>/?',
+  '`~_- - +=|\\',
+  'CTRL - ALT - DEL',
+  'SHIFT - ENTER',
+  'TAB - SPACE',
+  'TYPE - TAP - WIN',
+  '0X1A - 9F7C',
 ];
 
 const scrambleCharacters =
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()[]{}<>/?;:,.`~_-+=|\\ ";
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()[]{}<>/?;:,.`~_-+=|\\ ';
 
 function readThemeColor(variableName: string) {
-  if (typeof window === "undefined") {
-    return "";
+  if (typeof window === 'undefined') {
+    return '';
   }
 
   return getComputedStyle(document.documentElement)
@@ -54,17 +54,17 @@ function getRandomScrambleCharacter() {
 
 function shouldReduceMotion() {
   return (
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
   );
 }
 
 function getInitialScrambleText(phrases: Array<string>) {
   if (phrases.length === 0) {
-    return "";
+    return '';
   }
 
-  return shouldReduceMotion() ? phrases[phrases.length - 1] : phrases[0];
+  return phrases[0];
 }
 
 function useScrambledText(phrases: Array<string>) {
@@ -89,13 +89,13 @@ function useScrambledText(phrases: Array<string>) {
 
       setDisplayText(
         targetPhrase
-          .split("")
+          .split('')
           .map((character, index) =>
-            index < resolvedCharacters || character === " "
+            index < resolvedCharacters || character === ' '
               ? character
               : getRandomScrambleCharacter(),
           )
-          .join(""),
+          .join(''),
       );
 
       if (frame >= frameLimit) {
@@ -105,7 +105,7 @@ function useScrambledText(phrases: Array<string>) {
     }, 42);
     const nextPhraseTimeoutId = window.setTimeout(() => {
       setPhraseIndex((currentIndex) => (currentIndex + 1) % phrases.length);
-    }, 1800);
+    }, 2800);
 
     return () => {
       window.clearInterval(intervalId);
@@ -119,7 +119,7 @@ function useScrambledText(phrases: Array<string>) {
 function FloatingKeyboard() {
   const isCoarsePointer = useIsCoarsePointer();
   const modelRef = useRef<Group>(null);
-  const { scene } = useGLTF("/assets/keyboard.glb");
+  const { scene } = useGLTF('/assets/keyboard.glb');
 
   useFrame(({ clock }) => {
     if (!modelRef.current) {
@@ -147,8 +147,8 @@ function FloatingKeyboard() {
 function SplashScene() {
   const colors = useMemo(() => {
     return {
-      accent: readThemeColor("--color-accent"),
-      text: readThemeColor("--color-text-primary"),
+      accent: readThemeColor('--color-accent'),
+      text: readThemeColor('--color-text-primary'),
     };
   }, []);
 
@@ -158,9 +158,9 @@ function SplashScene() {
         fov: 36,
         position: [0, 1.1, 3.6],
       }}
-      className="h-full w-full"
+      className='h-full w-full'
       dpr={[1, 1.6]}
-      style={{ height: "100%", width: "100%" }}
+      style={{ height: '100%', width: '100%' }}
     >
       <ambientLight color={colors.text} intensity={1.15} />
       <directionalLight
@@ -168,7 +168,11 @@ function SplashScene() {
         intensity={2.4}
         position={[2.8, 4, 3]}
       />
-      <pointLight color={colors.accent} intensity={18} position={[-2.2, 1.2, 1.6]} />
+      <pointLight
+        color={colors.accent}
+        intensity={18}
+        position={[-2.2, 1.2, 1.6]}
+      />
       <Suspense fallback={null}>
         <FloatingKeyboard />
       </Suspense>
@@ -195,49 +199,49 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
   useEffect(() => {
     const handleKeyDown = () => dismiss();
 
-    window.addEventListener("keydown", handleKeyDown, { once: true });
+    window.addEventListener('keydown', handleKeyDown, { once: true });
 
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [dismiss]);
 
   return (
     <main
-      className="fixed inset-0 z-50 flex min-h-screen flex-col items-center justify-center overflow-hidden bg-(--color-bg) px-6 text-center transition-[opacity,transform] duration-300 ease-out data-[leaving=true]:scale-[1.02] data-[leaving=true]:opacity-0"
-      data-leaving={isLeaving ? "true" : "false"}
+      className='fixed inset-0 z-50 flex min-h-screen flex-col items-center justify-center overflow-hidden bg-(--color-bg) px-6 text-center transition-[opacity,transform] duration-300 ease-out data-[leaving=true]:scale-[1.02] data-[leaving=true]:opacity-0'
+      data-leaving={isLeaving ? 'true' : 'false'}
       onPointerDown={dismiss}
     >
       <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-(--color-accent) opacity-70 shadow-[0_0_34px_var(--color-glow)]"
+        aria-hidden='true'
+        className='pointer-events-none absolute inset-x-0 top-0 h-px bg-(--color-accent) opacity-70 shadow-[0_0_34px_var(--color-glow)]'
       />
 
-      <section className="relative flex w-full max-w-5xl flex-col items-center">
-        <div className="h-[46vh] min-h-72 w-full max-w-4xl sm:h-[54vh]">
+      <section className='relative flex w-full max-w-5xl flex-col items-center'>
+        <div className='h-[46vh] min-h-72 w-full max-w-4xl sm:h-[54vh]'>
           <Suspense
             fallback={
-              <div className="flex h-full items-center justify-center text-xs font-bold tracking-[0.22em] text-(--color-text-muted) uppercase">
+              <div className='flex h-full items-center justify-center text-xs font-bold tracking-[0.22em] text-(--color-text-muted) uppercase'>
                 Loading keyboard
               </div>
             }
           >
-            <div className="h-full w-full [&_canvas]:h-full! [&_canvas]:w-full!">
+            <div className='h-full w-full [&_canvas]:h-full! [&_canvas]:w-full!'>
               <SplashScene />
             </div>
           </Suspense>
         </div>
 
-        <div className="animate-[kw-fade-up_560ms_120ms_ease-out_both]">
-          <p className="min-h-4 text-xs font-semibold tracking-[0.22em] text-(--color-accent) uppercase">
+        <div className='animate-[kw-fade-up_560ms_120ms_ease-out_both]'>
+          <p className='min-h-4 text-xs font-semibold tracking-[0.22em] text-(--color-accent) uppercase'>
             {eyebrowText}
           </p>
-          <h1 className="mt-4 max-w-full text-2xl leading-none font-black tracking-normal text-(--color-text-primary) sm:text-6xl lg:text-7xl">
+          <h1 className='mt-4 max-w-full text-2xl leading-none font-black tracking-normal text-(--color-text-primary) sm:text-6xl lg:text-7xl'>
             Keyboard Warrior
           </h1>
-          <p className="mx-auto mt-5 max-w-xl text-sm leading-6 text-(--color-text-secondary) sm:text-base">
-            {isCoarsePointer ? "Tap to begin" : "Press any key"}
+          <p className='mx-auto mt-5 max-w-xl text-sm leading-6 text-(--color-text-secondary) sm:text-base'>
+            {isCoarsePointer ? 'Tap to begin' : 'Press any key'}
           </p>
-          <p className="mt-5 animate-[kw-pulse_1.8s_ease-in-out_infinite] text-xs font-bold tracking-[0.18em] text-(--color-text-muted) uppercase">
-            {isCoarsePointer ? "Tap anywhere" : "Keyboard ready"}
+          <p className='mt-5 animate-[kw-pulse_1.8s_ease-in-out_infinite] text-xs font-bold tracking-[0.18em] text-(--color-text-muted) uppercase'>
+            {isCoarsePointer ? 'Tap anywhere' : 'Keyboard ready'}
           </p>
         </div>
       </section>
@@ -245,4 +249,4 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
   );
 }
 
-useGLTF.preload("/assets/keyboard.glb");
+useGLTF.preload('/assets/keyboard.glb');

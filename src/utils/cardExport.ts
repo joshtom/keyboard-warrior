@@ -1,4 +1,4 @@
-import { toBlob, toPng } from "html-to-image";
+import { toPng } from "html-to-image";
 
 function getExportBackgroundColor() {
   if (typeof window === "undefined") {
@@ -8,14 +8,6 @@ function getExportBackgroundColor() {
   return getComputedStyle(document.documentElement)
     .getPropertyValue("--color-bg")
     .trim();
-}
-
-export async function getElementPngBlob(element: HTMLElement) {
-  return toBlob(element, {
-    backgroundColor: getExportBackgroundColor(),
-    cacheBust: true,
-    pixelRatio: 1,
-  });
 }
 
 export async function downloadElementAsPng(

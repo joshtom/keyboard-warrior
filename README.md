@@ -6,7 +6,8 @@ client-side, session-based, and built around quick runs with shareable results.
 
 ## Features
 
-- Animated Three.js splash screen with a floating keyboard model.
+- Animated Three.js splash screen with a floating keyboard model and
+  scramble-text keyboard prompts.
 - Letter Mode with lowercase, uppercase, numbers, and symbols by difficulty.
 - Desktop-only Word Mode with expanded word lists for less repetition.
 - Mobile tap mode with piano-tiles-style falling tiles.
@@ -87,6 +88,17 @@ Splash Screen
   -> Results
   -> Download Score Card / Play Again / Home
 ```
+
+## Splash Screen
+
+The first screen uses a floating Three.js keyboard model with a subtle bob and
+rotation animation. Above the title, the eyebrow copy cycles through keyboard
+phrases such as `KEYBOARD REFLEX TEST`, `QWERTY - TYUIO`, number rows, symbol
+patterns, and shortcut-inspired prompts.
+
+The phrase transition uses a scramble animation with a deliberate pause between
+changes so the text feels animated without becoming frantic. Users can dismiss
+the splash with any key on desktop or a tap on mobile.
 
 ## Modes
 
